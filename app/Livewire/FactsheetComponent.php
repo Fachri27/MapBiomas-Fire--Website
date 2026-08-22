@@ -24,7 +24,7 @@ class FactsheetComponent extends Component
         $this->deleter = true;
     }
 
-    public function storeDelete(){
+    public function deleting($id){
         DB::table('factsheet')->where('id', $this->deleteID)->delete();
         $this->closeDelete();
     }

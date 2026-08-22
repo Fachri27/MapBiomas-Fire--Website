@@ -40,7 +40,7 @@ class FaqComponent extends Component
         $sc = '%' . $this->query . '%';
         try {
             return  DB::table('faq')
-                        ->select('id', 'category', 'questionID', 'questionEN')
+                        ->select('id', 'questionID', 'questionEN')
                         ->where('questionID', 'like', $sc)
                         ->orderByDesc('id')
                         ->paginate($this->paginate);

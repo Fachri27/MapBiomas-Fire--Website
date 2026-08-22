@@ -52,7 +52,7 @@ class CmsSmokeTest extends TestCase
 
         Livewire::test(FactsheetComponent::class)
             ->call('delete', $id)
-            ->call('storeDelete');
+            ->call('deleting', $id);
 
         $this->assertNull(DB::table('factsheet')->find($id));
     }
