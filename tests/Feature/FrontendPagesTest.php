@@ -1,0 +1,233 @@
+<?php
+
+namespace Tests\Feature;
+
+use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\TestCase;
+
+/**
+ * Halaman publik selain landing, plus navbar bersama yang mereka pakai.
+ */
+class FrontendPagesTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function isiHalaman(string $tabel, array $ubah = []): void
+    {
+        $default = [
+            'name' => 'uji',
+            'contentID' => '<p>Isi bahasa Indonesia.</p>',
+            'contentEN' => '<p>English content.</p>',
+        ];
+
+        // Fact sheet tidak lagi menyimpan satu blok konten, melainkan
+        // judul, deskripsi, dan tautan unduhan per kategori.
+        if ($tabel === 'factsheet') {
+            $default = [
+                'titleID' => 'Judul bahasa Indonesia.',
+                'titleEN' => 'Title in english.',
+                'descriptionID' => 'Deskripsi bahasa Indonesia.',
+                'descriptionEN' => 'Description in english.',
+                'link' => 'https://contoh.id/berkas.pdf',
+            ];
+        }
+
+        DB::table($tabel)->insert(array_merge($default, $ubah));
+    }
+
+    private function terbitkanBerita(array $ubah = []): int
+    {
+        return DB::table('news')->insertGetId(array_merge([
+            'category' => 'news',
+            'publishdate' => Carbon::now('Asia/Jakarta')->subDay()->format('Y-m-d H:i:s'),
+            'titleID' => 'Judul berita',
+            'titleEN' => 'News title',
+            'img' => 'berita.jpg',
+            'descriptionID' => '<p>Ringkasan.</p>',
+            'descriptionEN' => '<p>Summary.</p>',
+            'contentID' => '<p>Isi lengkap.</p>',
+            'contentEN' => '<p>Full body.</p>',
+            'slug' => 'judul-berita',
+            'status' => '1',
+        ], $ubah));
+    }
+
+    // ── Halaman isi satu baris ────────────────────────────────────────────
+
+    public static function halamanIsiTunggal(): array
+    {
+        return [
+            'about' => ['about', 'pageabout'],
+            'terms of use' => ['termsofuse', 'pagetermofuse'],
+            'reference map' => ['refrencemap', 'pagerefrencemap'],
+            'downloads' => ['downloads', 'pagedownload'],
+        ];
+    }
+
+    #[DataProvider('halamanIsiTunggal')]
+    public function test_halaman_isi_menampilkan_konten_sesuai_bahasa(string $rute, string $tabel): void
+    {
+        $this->isiHalaman($tabel, ['id' => 1]);
+
+        $this->get(route($rute, 'id'))->assertOk()->assertSee('Isi bahasa Indonesia.');
+        $this->get(route($rute, 'en'))->assertOk()->assertSee('English content.');
+    }
+
+    /**
+     * Baris isinya belum tentu ada di pemasangan baru; halaman tetap harus
+     * terbuka, bukan melempar galat.
+     */
+    #[DataProvider('halamanIsiTunggal')]
+    public function test_halaman_isi_tetap_terbuka_saat_konten_belum_diisi(string $rute): void
+    {
+        $this->get(route($rute, 'id'))->assertOk();
+    }
+
+    // ── Halaman berkategori dua ───────────────────────────────────────────
+
+    public static function halamanBerkategori(): array
+    {
+        return [
+            'ATBD' => ['atbd', 'pageatbd', 'contentID'],
+            'fact sheet' => ['factsheet', 'factsheet', 'descriptionID'],
+        ];
+    }
+
+    #[DataProvider('halamanBerkategori')]
+    public function test_kategori_menentukan_isi_yang_tampil(string $rute, string $tabel, string $isiKey): void
+    {
+        $this->isiHalaman($tabel, ['category' => 'monthly', $isiKey => 'Isi bulanan.']);
+        $this->isiHalaman($tabel, ['category' => 'annual', $isiKey => 'Isi tahunan.']);
+
+        $this->get(route($rute, ['lang' => 'id', 'cat' => 'monthly']))
+            ->assertOk()->assertSee('Isi bulanan.')->assertDontSee('Isi tahunan.');
+
+        $this->get(route($rute, ['lang' => 'id', 'cat' => 'annual']))
+            ->assertOk()->assertSee('Isi tahunan.')->assertDontSee('Isi bulanan.');
+    }
+
+    #[DataProvider('halamanBerkategori')]
+    public function test_kategori_kosong_atau_ngawur_jatuh_ke_bulanan(string $rute, string $tabel, string $isiKey): void
+    {
+        $this->isiHalaman($tabel, ['category' => 'monthly', $isiKey => 'Isi bulanan.']);
+
+        $this->get(route($rute, 'id'))->assertOk()->assertSee('Isi bulanan.');
+        $this->get(route($rute, ['lang' => 'id', 'cat' => 'sembarang']))
+            ->assertOk()->assertSee('Isi bulanan.');
+    }
+
+    /**
+     * Status aktif tidak boleh hanya dibawa warna — aria-current membuatnya
+     * terbaca pembaca layar.
+     */
+    #[DataProvider('halamanBerkategori')]
+    public function test_tab_kategori_menandai_yang_sedang_aktif(string $rute, string $tabel, string $isiKey): void
+    {
+        $this->isiHalaman($tabel, ['category' => 'annual']);
+
+        $this->get(route($rute, ['lang' => 'id', 'cat' => 'annual']))
+            ->assertSee('aria-current="page"', false)
+            ->assertSee('Monthly')
+            ->assertSee('Annual');
+    }
+
+    // ── FAQ ───────────────────────────────────────────────────────────────
+
+    public function test_faq_menampilkan_pertanyaan_sesuai_bahasa(): void
+    {
+        DB::table('faq')->insert([
+            'questionID' => 'Apa itu MapBiomas Fire?',
+            'answerID' => 'Inisiatif pemantauan area terbakar.',
+            'questionEN' => 'What is MapBiomas Fire?',
+            'answerEN' => 'A burned area monitoring initiative.',
+        ]);
+
+        $this->get(route('faq', 'id'))->assertOk()->assertSee('Apa itu MapBiomas Fire?');
+        $this->get(route('faq', 'en'))->assertOk()->assertSee('What is MapBiomas Fire?');
+    }
+
+    // ── Berita ────────────────────────────────────────────────────────────
+
+    public function test_daftar_kabar_dan_agenda_terbuka(): void
+    {
+        $this->terbitkanBerita();
+        $this->get(route('newsnevent', 'id'))->assertOk();
+    }
+
+    public function test_detail_berita_menampilkan_isi_sesuai_bahasa(): void
+    {
+        $id = $this->terbitkanBerita();
+
+        $this->get(route('detailnews', ['id', $id, 'judul-berita']))
+            ->assertOk()->assertSee('Isi lengkap.', false);
+
+        $this->get(route('detailnews', ['en', $id, 'judul-berita']))
+            ->assertOk()->assertSee('Full body.', false);
+    }
+
+    /** Deskripsi masuk ke <meta>; markup mentah di sana merusak pratinjau. */
+    public function test_meta_deskripsi_berita_bebas_markup(): void
+    {
+        $id = $this->terbitkanBerita(['descriptionEN' => '<p>Ringkasan berita.</p>']);
+
+        $this->get(route('detailnews', ['en', $id, 'judul-berita']))
+            ->assertSee('name="description" content="Ringkasan berita."', false)
+            ->assertDontSee('content="&lt;p&gt;', false);
+    }
+
+    public function test_infografis_terbuka(): void
+    {
+        $this->get(route('infographics', 'id'))->assertOk();
+    }
+
+    // ── Navbar bersama ────────────────────────────────────────────────────
+
+    /**
+     * navPC, navMobile, dan detailNavPc harus menjangkau tujuan yang sama.
+     * Halaman biasa memakai dua yang pertama, halaman detail memakai yang ketiga.
+     */
+    public function test_navbar_halaman_biasa_dan_halaman_detail_menjangkau_tujuan_yang_sama(): void
+    {
+        $id = $this->terbitkanBerita();
+
+        $tujuan = [
+            '/en/about', '/en/faq', '/en/termsofuse', '/en/atbd?cat=monthly',
+            '/en/atbd?cat=annual', '/en/refrencemap', '/en/newnevent',
+            '/en/downloads', '/en/infographics', '/en/factsheet',
+        ];
+
+        $biasa = $this->get(route('about', 'en'));
+        $detail = $this->get(route('detailnews', ['en', $id, 'judul-berita']));
+
+        foreach ($tujuan as $t) {
+            $biasa->assertSee($t, false);
+            $detail->assertSee($t, false);
+        }
+    }
+
+    /**
+     * Pengalih bahasa di navbar seluler membangun ulang rute yang sedang aktif.
+     * Pada rute detail yang butuh id dan slug, versi lamanya melempar galat —
+     * itu sebabnya dulu dimatikan.
+     */
+    public function test_pengalih_bahasa_seluler_mempertahankan_parameter_rute(): void
+    {
+        $id = $this->terbitkanBerita();
+
+        $this->get(route('detailnews', ['id', $id, 'judul-berita']))
+            ->assertOk()
+            ->assertSee("/en/news/$id/judul-berita", false);
+    }
+
+    public function test_pengalih_bahasa_seluler_mempertahankan_query(): void
+    {
+        $this->isiHalaman('pageatbd', ['category' => 'annual']);
+
+        $this->get(route('atbd', ['lang' => 'id', 'cat' => 'annual']))
+            ->assertOk()
+            ->assertSee('/en/atbd?cat=annual', false);
+    }
+}

@@ -18,7 +18,7 @@
 
      <!-- hero -->
       <div class="relative mt-2">
-        <img src="assets/hero-fire.png" alt="Mapbiomas Fire - Indonesia" class="sm:h-[70vh] h-[40vh] w-full object-top object-cover relative">
+        <img src="{{ asset('images/hero-fire.jpg') }}" alt="Mapbiomas Fire - Indonesia" class="sm:h-[70vh] h-[40vh] w-full object-[center_75%] object-cover relative">
         <a href="https://plataforma.mapbiomas.org/fire/fire_annual?t[regionKey]=indonesia" class="absolute bg-red-600 text-white sm:bottom-32 bottom-16 sm:left-[22rem] left-5 px-4 py-1 font-semibold">Access The Platform</a>
       </div>
 
@@ -38,7 +38,7 @@
 
                             <a href="{{ route('detailnews', [app()->getLocale(), $item->id, $item->slug]) }}" class="md:mt-6 mt-3 font-semibold flex-shrink-0 flex ">{{ $item->title }}</a>
                             <div class="mt-2 text-sm  font-light">
-                                {{ $item->description }}
+                                {{ strip_tags($item->description) }}
                             </div>
                         </div>
 

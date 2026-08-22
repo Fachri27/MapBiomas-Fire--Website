@@ -18,7 +18,7 @@
     {{-- heroPage --}}
 
     <div class="">
-        <img src="{{ asset('assets/hero-fire.png') }}" alt="Mapbiomas Indonesia - Fire" class=" mt-2 z-10 sm:h-[45vh] h-[30vh] w-full object-top object-cover">
+        <img src="{{ asset('images/hero-fire.jpg') }}" alt="Mapbiomas Indonesia - Fire" class=" z-10 sm:h-[45vh] h-[30vh] w-full object-[center_75%] object-cover">
     </div>
 
     <div class="sm:px-0 px-4" x-data="{ open: '' }">

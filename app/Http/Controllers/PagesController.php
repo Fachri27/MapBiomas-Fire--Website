@@ -66,10 +66,10 @@ class PagesController extends Controller
                 ->first();
     }
 
-    public function getatbd(){
+    public function getatbd($category = 'monthly'){
         return DB::table('pageatbd')
                 ->selectRaw($this->getSelect())
-                ->where('id', 1)
+                ->where('category', $category)
                 ->first();
     }
 
@@ -108,11 +108,14 @@ class PagesController extends Controller
         return view('frontends.downloads', compact('title','description', 'data'));
     }
 
-    public function atbd(){
-        $title = 'MapBiomas Fire - atbd';
-        $data = $this->getatbd();
+    public function atbd(Request $request){
+        $cat = $request->query('cat');
+        $category = in_array($cat, ['monthly', 'annual']) ? $cat : 'monthly';
+
+        $title = 'MapBiomas Fire - ATBD '.$category;
+        $data = $this->getatbd($category);
         $description = "Inisiatif MapBiomas Fire dimulai sejak 2023, bersama sembilan jaringan organisasi masyarakat sipil (CSO) yang dikoordinasi oleh Auriga Nusantara dan Woods and Wayside International (WWI). MapBiomas Fire memetakan kebakaran menggunakan teknologi komputasi yang didukung algoritma machine learning dan deep learning.";
-        return view('frontends.atbd', compact('title','description', 'data'));
+        return view('frontends.atbd', compact('title','description', 'data', 'category'));
     }
 
 }

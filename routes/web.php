@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FactsheetController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\InfographicController;
@@ -22,6 +23,7 @@ Route::middleware([setLanguage::class])->group(function () {
         Route::get('/faq', [FaqController::class, 'listfaq'])->name('faq');
         Route::get('/downloads', [PagesController::class, 'downloads'])->name('downloads');
         Route::get('/atbd', [PagesController::class, 'atbd'])->name('atbd');
+        Route::get('/factsheet', [FactsheetController::class, 'listFactsheet'])->name('factsheet');
         Route::get('/news/{id}/{slug}', [NewsController::class, 'detailnews'])->name('detailnews');
         Route::get('/event/{id}/{slug}', [NewsController::class, 'detailevent'])->name('detailevent');
         Route::get('/newnevent', [NewsController::class, 'newsnevent'])->name('newsnevent');
@@ -48,6 +50,9 @@ Route::middleware([checkSession::class])->group(function () {
     Route::get('/cms/cmsrefrencemap', [PagesController::class, 'cmsrefrencemap']);
     Route::get('/cms/cmsatbd', [PagesController::class, 'cmsatbd']);
     Route::get('/cms/cmsdownload', [PagesController::class, 'cmsdownloads']);
+    Route::get('/cms/listfactsheet', [FactsheetController::class, 'index']);
+    Route::get('/cms/addfactsheet', [FactsheetController::class, 'add']);
+    Route::get('/cms/editfactsheet/{id}', [FactsheetController::class, 'edit']);
 
     Route::group(['prefix' => '/cms/fire-filemanager'], function () {
         \UniSharp\LaravelFilemanager\Lfm::routes();
