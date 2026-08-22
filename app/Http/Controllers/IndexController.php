@@ -11,7 +11,12 @@ class IndexController extends Controller
     {
         // Landing baru (porting dari proyek prototipe); kabar & infografis
         // diambil dari CMS seperti pada tampilan lama.
+        $title = 'MapBiomas Fire Indonesia — '.__('Pemantauan area terbakar');
+        $description = __('Peta dan data area terbakar di Indonesia, diperbarui bulanan dan direkap tahunan sejak 2000.');
+
         return view('frontends.landing', [
+            'title' => $title,
+            'description' => $description,
             'news' => $this->getNews(),
             'infographic' => $this->getInfographic(),
         ]);

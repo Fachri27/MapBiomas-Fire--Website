@@ -72,9 +72,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MapBiomas Fire Indonesia — {{ __('Pemantauan area terbakar') }}</title>
-    <meta name="description" content="{{ __('Peta dan data area terbakar di Indonesia, diperbarui bulanan dan direkap tahunan sejak 2000.') }}">
+    <title>{{ $title }}</title>
+    @include('partials.indexMeta')
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/favicon.png') }}">
+    @yield('meta')
 
     {{-- Keluarga huruf landing: Poppins (display), Instrument Sans (body),
          IBM Plex Mono (data). Open Sans halaman lama tetap dimuat app.css. --}}
