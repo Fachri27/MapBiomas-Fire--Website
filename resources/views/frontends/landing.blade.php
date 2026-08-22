@@ -230,7 +230,7 @@
                                    class="border border-ember px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                        {{ __('Fact Sheet') }}
                                 </a>
-                                <a href="#data"
+                                <a href="https://plataforma.mapbiomas.org/fire/fire_monthly?t[regionKey]=indonesia"
                                    class="border border-ember px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                     {{ __('Access The Platform') }}
                                 </a>
@@ -259,7 +259,7 @@
                                     class="border border-white px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
                                     {{ __('Methodology') }}
                                 </a>
-                                <a href="#data"
+                                <a href="https://plataforma.mapbiomas.org/fire/fire_annual?t[regionKey]=indonesia"
                                    class="border border-white px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
                                     {{ __('Access The Platform') }}
                                 </a>
