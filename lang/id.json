@@ -9,11 +9,12 @@
     "news & event": "kabar & acara",
     "downloads": "unduhan",
     "collection map": "peta koleksi",
-    "monthly monitoring": "pemantauan bulanan",
-    "annual monitoring": "pemantauan tahunan",
-    "Technical experts review MapBiomas Indonesia": "Pakar teknis menelaah MapBiomas Indonesia",
+    "monthly fire": "kebakaran bulanan",
+    "annual monitoring": "kebakaran tahunan",
+    "2026 maps and data of monthly burned areas in Indonesia": "Data dan peta area terbakar bulanan 2026 di Indonesia",
+    "Annual burned areas maps and data, 2000-2024": "Data dan peta area terbakar tahunan 2000‑2024 di Indonesia",
     "Collection 1 methodology and results": "metodologi dan hasil Collection 1",
-    "Fact Sheet": "Lembar Fakta",
+    "Factsheet": "Factsheet",
     "Access The Platform": "Akses Platform",
     "Methodology": "Metodologi",
     "An Initiative of:": "Sebuah Inisiatif dari:",
@@ -27,5 +28,10 @@
     "ATBD category": "Kategori ATBD",
     "Fact sheet category": "Kategori fact sheet",
     "Download Fact Sheet": "Unduh Fact Sheet",
-    "Belum ada fact sheet terbit.": "Belum ada fact sheet terbit."
+    "Belum ada fact sheet terbit.": "Belum ada fact sheet terbit.",
+    "annual fire": "kebakaran tahunan",
+    "2000-2024 burned areas": "area terbakar 2000‑2024",
+    "2000-2024 burned areas occur on peat land": "area terbakar 2000‑2024 terjadi di lahan gambut",
+    "January-June 2026 burned areas": "area terbakar Januari‑Juni 2026",
+    "January-June 2026 burned areas occur in Kalimantan": "area terbakar Januari‑Juni 2026 terjadi di Kalimantan"
 }
