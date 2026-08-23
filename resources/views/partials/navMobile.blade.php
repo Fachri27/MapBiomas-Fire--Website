@@ -7,11 +7,14 @@
 
     /* Tautan bahasa untuk rute yang sedang dibuka. Parameter rute ikut dibawa
        supaya halaman detail berita (yang perlu id & slug) tidak error, dan
-       query dipertahankan agar ?cat= pada FAQ/ATBD tidak hilang. */
-    $langUrl = fn (string $lang): string => route(
-        Route::currentRouteName(),
-        array_merge(request()->route()->parameters(), ['lang' => $lang], request()->query())
-    );
+       query dipertahankan agar ?cat= pada FAQ/ATBD tidak hilang. Halaman CMS
+       tanpa nama rute (mis. pratinjau berita) jatuh ke beranda bahasa tujuan. */
+    $langUrl = fn (string $lang): string => Route::currentRouteName()
+        ? route(
+            Route::currentRouteName(),
+            array_merge(request()->route()->parameters(), ['lang' => $lang], request()->query())
+        )
+        : url($lang);
 @endphp
 <header class="bg-auriga-biru sticky top-0 z-30">
     <div x-data="{ open: false }" class="px-4 py-3 bg-white z-10 {{ $mobileOnly }} block">

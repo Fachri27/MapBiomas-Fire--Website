@@ -65,8 +65,13 @@
 
 
                             <td class=" py-4 break-words text-sm font-bold text-newgray-700 dark:text-gray-300  ">
-                                <div class="px-4 items-center flex ">
-                                    <img src="{{asset('storage/files/photos/thumbnail/'.$item->img)}}" alt="" class="spect-w-16 aspect-h-9  sm:block hidden bg-cover bg-center">
+                                @php $thumb = 'storage/files/photos/thumbnail/' . $item->img; @endphp
+                                <div class="px-4 items-center flex">
+                                    @if ($item->img && file_exists(public_path($thumb)))
+                                        <img src="{{ asset($thumb) }}" alt="{{ $item->titleID }}" class="w-20 aspect-video object-cover rounded sm:block hidden">
+                                    @else
+                                        <span class="text-xs italic text-gray-400">No image</span>
+                                    @endif
                                 </div>
 
                             </td>
@@ -101,6 +106,8 @@
                                         x-show.transition="open"
                                         @click.away="open = false"
                                         x-cloak style="display: none !important">
+                                        <a  href="{{ url('/cms/previewcardnews/'.$item->id) }}" target="_blank"><li class="block hover:bg-gray-200 cursor-pointer py-1 mt-2 px-4 dark:text-gray-500" @click.away="open = false">Preview Card</li></a>
+                                        <a  href="{{ url('/cms/previewnews/'.$item->id) }}" target="_blank"><li class="block hover:bg-gray-200 cursor-pointer py-1 mt-2 px-4 dark:text-gray-500" @click.away="open = false">Preview</li></a>
                                         @if (isset($item->url))
                                             <a  href="{{ url('/cms/editeksternal/'.$item->id) }}"><li class="block hover:bg-gray-200 cursor-pointer py-1 mt-2 px-4 dark:text-gray-500" @click.away="open = false">Edit</li></a>
                                         @else
