@@ -3,33 +3,53 @@
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
 class PageAtbd extends Component
 {
-    public $contentEN, $contentID, $category;
+    public const KATEGORI = ['monthly', 'annual'];
+
+    public $contentEN, $contentID;
+
+    /** Disinkronkan ke ?cat= lewat history, tanpa memuat ulang halaman. */
+    #[Url(as: 'cat')]
+    public $category = 'monthly';
 
     public function mount(){
-        $cat = request()->query('cat');
-        $this->category = in_array($cat, ['monthly', 'annual']) ? $cat : 'monthly';
-
-        $data = DB::table('pageatbd')->where('category', $this->category)->first();
-        if($data){
-            $this->contentEN = $data->contentEN;
-            $this->contentID = $data->contentID;
-        }else{
-            $this->contentEN = '';
-            $this->contentID = '';
+        if(! in_array($this->category, self::KATEGORI)){
+            $this->category = 'monthly';
         }
+
+        $this->muatKonten();
     }
 
-    // Full page reload on category switch: the TinyMCE editors are
-    // wire:ignore so they must be re-initialized with the new content.
-    // request()->url() is /livewire/update during a round-trip,
-    // so target the page route explicitly.
+    /**
+     * Dulu ini memuat ulang seluruh halaman, yang berarti kedua editor TinyMCE
+     * ikut dibangun ulang — itu sumber lambatnya. Sekarang cukup satu permintaan
+     * kecil: kontennya diambil lalu didorong ke editor yang sudah berdiri.
+     */
     public function updatedCategory($value){
-        redirect()->to(url('/cms/cmsatbd').'?cat='.$value);
+        if(! in_array($value, self::KATEGORI)){
+            $this->category = 'monthly';
+        }
+
+        $this->muatKonten();
+
+        $this->dispatch(
+            'atbd-konten-diganti',
+            contentEN: $this->contentEN,
+            contentID: $this->contentID,
+        );
+    }
+
+    private function muatKonten(): void
+    {
+        $data = DB::table('pageatbd')->where('category', $this->category)->first();
+
+        $this->contentEN = $data->contentEN ?? '';
+        $this->contentID = $data->contentID ?? '';
     }
 
     public function storePage(){
