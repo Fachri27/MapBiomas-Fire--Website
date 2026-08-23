@@ -28,17 +28,28 @@
             'children' => [
                 ['label' => __('collection map'), 'href' => route('downloads', $lang)],
                 ['label' => __('infographics'), 'href' => route('infographics', $lang)],
-                ['label' => __('fact sheet'), 'href' => route('factsheet', $lang)],
+                ['label' => __('factsheet'), 'href' => route('factsheet', $lang)],
             ],
         ],
     ];
 
     /** Angka diambil dari infografis Koleksi 1 pada berkas desain. */
+    /**
+     * Angka dieja mengikuti lokal: Indonesia memakai koma desimal dan titik
+     * ribuan, Inggris sebaliknya. Tanpa ini "232.996" terbaca sebagai 232 koma
+     * 996 oleh pembaca berbahasa Inggris — meleset seribu kali lipat.
+     */
+    $angka = fn (float $n, int $desimal = 0): string => app()->getLocale() === 'id'
+        ? number_format($n, $desimal, ',', '.')
+        : number_format($n, $desimal, '.', ',');
+
+    // Rentang tahun memakai tanda hubung tak-putus (U+2011) supaya barisnya
+    // pindah sebelum rentang, bukan memotongnya jadi "2000-" / "2024".
     $highlights = [
-        ['value' => '9,5', 'unit' => __('juta ha'), 'label' => __('Pernah terbakar setidaknya sekali dalam 25 tahun')],
-        ['value' => '0,8', 'unit' => __('juta ha'), 'label' => __('Rata-rata luas terbakar setiap tahun')],
-        ['value' => '62,05', 'unit' => '%', 'label' => __('Terjadi di tutupan tumbuhan non-hutan')],
-        ['value' => '61', 'unit' => '%', 'label' => __('Area terbakar hingga 2024 jatuh pada September–November')],
+        ['value' => $angka(9.5, 1), 'unit' => __('juta ha'), 'label' => __('2000-2024 burned areas')],
+        ['value' => $angka(40), 'unit' => '%', 'label' => __('2000-2024 burned areas occur on peat land')],
+        ['value' => $angka(178232), 'unit' => __('ha'), 'label' => __('January-June 2026 burned areas')],
+        ['value' => $angka(21), 'unit' => '%', 'label' => __('January-June 2026 burned areas occur in Kalimantan')],
     ];
 
     /** Tanggal publikasi kabar mengikuti bahasa aktif (id/en). */
@@ -210,17 +221,17 @@
                     <div class="{{ $shell }} grid lg:grid-cols-2">
 
                     {{-- monthly --}}
-                    <article class="[container-type:inline-size] relative overflow-hidden lg:aspect-[760/428]">
+                    <article class="[container-type:inline-size] relative overflow-hidden lg:aspect-[760/428] border border-black">
                         <img src="{{ asset('images/hero-fire.jpg') }}" alt="" aria-hidden="true"
                              class="absolute inset-0 h-full w-full object-cover lg:hidden">
                         <div class="absolute inset-0 bg-white/[0.685]"></div>
 
                         <div class="relative flex h-full flex-col px-[7.6cqw] pb-[8.8cqw] pt-[8.2cqw]">
                             <h2 class="font-display text-[clamp(1.55rem,6.6cqw,3.3rem)] font-semibold lowercase leading-none tracking-[-0.005em] text-ember">
-                                {{ __('monthly monitoring') }}
+                                {{ __('monthly fire') }}
                             </h2>
-                            <p class="mt-[3.1cqw] font-display text-[clamp(0.8rem,2.63cqw,1.32rem)] font-medium leading-[1.3] text-neutral-900">
-                                {{ __('Technical experts review MapBiomas Indonesia') }} <br class="hidden lg:inline">{{ __('Collection 1 methodology and results') }}
+                            <p class="mt-[5.1cqw] font-display text-[clamp(1.1rem,3.8cqw,1.9rem)] font-medium leading-[1.3] text-neutral-900">
+                                {{ __('2026 maps and data of monthly burned areas in Indonesia') }}
                             </p>
 
                             {{-- Seluler: dua kolom sama lebar supaya tidak ada yang
@@ -228,7 +239,7 @@
                             <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:flex lg:flex-nowrap lg:gap-[2.6cqw] lg:pt-0">
                                 <a href="{{ route('factsheet', $lang) }}"
                                    class="border border-ember px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
-                                       {{ __('Fact Sheet') }}
+                                       {{ __('Factsheet') }}
                                 </a>
                                 <a href="https://plataforma.mapbiomas.org/fire/fire_monthly?t[regionKey]=indonesia"
                                    class="border border-ember px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
@@ -239,17 +250,25 @@
                     </article>
 
                     {{-- annual --}}
-                    <article class="[container-type:inline-size] relative overflow-hidden lg:aspect-[760/428]">
+                    <article class="[container-type:inline-size] relative overflow-hidden lg:aspect-[760/428] border border-black">
                         <img src="{{ asset('images/hero-fire.jpg') }}" alt="" aria-hidden="true"
                              class="absolute inset-0 h-full w-full object-cover lg:hidden">
-                        <div class="absolute inset-0 bg-[#f87171] mix-blend-multiply"></div>
+                        {{-- Tint solid ber-alpha, mekanisme yang sama persis dengan
+                             kartu kiri (putih 68,5%) dan dengan alpha yang sama pula.
+                             Sebelumnya di sini dipakai mix-blend-multiply, dan itu
+                             menimbulkan dua masalah: tepi bawahnya lenyap di atas hutan
+                             gelap karena multiply tidak punya warna dasar sendiri, dan
+                             tepi atasnya tergambar ~1px lebih rendah karena lapisan
+                             blend dirasterisasi terpisah sementara tepi kartu jatuh di
+                             posisi pecahan. --}}
+                        <div class="absolute inset-0 bg-[#96241c]/[0.685]"></div>
 
                         <div class="relative flex h-full flex-col px-[7.5cqw] pb-[8.8cqw] pt-[8.2cqw]">
                             <h2 class="font-display text-[clamp(1.55rem,6.6cqw,3.3rem)] font-semibold lowercase leading-none tracking-[-0.005em] text-white">
-                                {{ __('annual monitoring') }}
+                                {{ __('annual fire') }}
                             </h2>
-                            <p class="mt-[3.1cqw] font-display text-[clamp(0.8rem,2.63cqw,1.32rem)] font-medium leading-[1.3] text-white">
-                                {{ __('Technical experts review MapBiomas Indonesia') }} <br class="hidden lg:inline">{{ __('Collection 1 methodology and results') }}
+                            <p class="mt-[5.1cqw] font-display text-[clamp(1.1rem,3.8cqw,1.9rem)] font-medium leading-[1.3] text-white">
+                                {{ __('Annual burned areas maps and data, 2000-2024') }}
                             </p>
 
                             {{-- Seluler: dua kolom sama lebar supaya tidak ada yang
@@ -275,12 +294,19 @@
         <section class="bg-white py-[6%] sm:py-[3.3%]" aria-label="Angka kunci Koleksi 1">
             {{-- 2x2 di seluler: empat angka terbaca sebagai satu blok, bukan
                  empat balok setinggi layar. --}}
-            <div class="{{ $shell }} grid grid-cols-2 gap-2 sm:gap-x-[2.7%] sm:gap-y-6 xl:grid-cols-4">
+            <div class="{{ $shell }} grid grid-cols-2 gap-2 sm:gap-x-[2.7%] sm:gap-y-6 xl:grid-cols-4 text-center">
                 @foreach ($highlights as $i => $tile)
                     <div class="{{ $anim }} flex flex-col justify-center bg-ember px-4 py-5 sm:aspect-[349/197] sm:px-[8%] sm:py-0"
                          {!! $reveal($i * 90) !!}>
-                        <p class="font-display text-[clamp(1.9rem,2.5vw,3rem)] font-light leading-none text-white">
-                            {{ $tile['value'] }}<span class="ml-1.5 text-[0.45em] font-normal">{{ $tile['unit'] }}</span>
+                        {{-- Skala disetel agar nilai terpanjang (232.996) tetap muat; ukurannya
+                             dibuat seragam supaya keempat ubin terbaca sebagai satu set.
+                             Batas atasnya disetel agar kombinasi terpanjang ("9.5 million ha"
+                             pada versi Inggris) tetap muat bersanding, tidak turun baris. --}}
+                        <p class="font-display text-[clamp(1.2rem,1.9vw,1.875rem)] font-light leading-none text-white">
+                            {{-- Semua satuan seukuran angkanya. Bedanya hanya jarak:
+                                 "%" menempel karena ia simbol, satuan berupa kata
+                                 dipisah spasi supaya tidak menyatu jadi satu kata. --}}
+                            @if ($tile['unit'] === '%'){{ $tile['value'] }}{{ $tile['unit'] }}@else{{ $tile['value'] }} {{ $tile['unit'] }}@endif
                         </p>
                         <p class="mt-3 font-display text-[clamp(0.75rem,0.85vw,0.95rem)] font-normal leading-snug text-white/95">
                             {{ $tile['label'] }}

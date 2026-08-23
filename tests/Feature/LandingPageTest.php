@@ -131,18 +131,6 @@ class LandingPageTest extends TestCase
             ->assertDontSee('#metodologi', false);
     }
 
-    /**
-     * <br> hanya tampil mulai lg. Tanpa spasi di sekitarnya, di layar kecil
-     * kedua kalimat menyatu jadi "MapBiomas Indonesiametodologi".
-     */
-    public function test_kalimat_hero_tidak_menyatu_saat_baris_baru_disembunyikan(): void
-    {
-        $this->get('/en')->assertSee(
-            'MapBiomas Indonesia <br class="hidden lg:inline">Collection 1',
-            false
-        );
-    }
-
     // ── Kabar ─────────────────────────────────────────────────────────────
 
     public function test_kabar_hanya_menampilkan_yang_sudah_terbit(): void
