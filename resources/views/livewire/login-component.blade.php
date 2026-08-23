@@ -14,6 +14,21 @@
             <input type="password" class=" appearance-none border rounded w-full py-2 px-5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" wire:model.defer="password" wire:keydown.enter='login'>
             @error('password') <span class="text-red-500 text-xs">{{ $message }}</span>@enderror
         </div>
+        @if (\App\Support\Turnstile::enabled())
+            {{-- wire:ignore wajib: Livewire tidak boleh merender ulang wadah ini,
+                 karena widget Cloudflare menyisipkan iframe-nya sendiri di sini
+                 dan akan hilang bila DOM-nya ditimpa. --}}
+            <div class="px-6 mb-4" wire:ignore>
+                <div id="turnstile-widget"
+                     class="cf-turnstile"
+                     data-sitekey="{{ \App\Support\Turnstile::siteKey() }}"
+                     data-callback="onTurnstileSuccess"
+                     data-expired-callback="onTurnstileExpired"
+                     data-error-callback="onTurnstileExpired"
+                     data-language="{{ app()->getLocale() }}"></div>
+            </div>
+        @endif
+
         <div class="px-6 mb-2">
             @if (session()->has('message'))
             <span class="text-red-500 text-xs">{{ session('message') }}</span>
