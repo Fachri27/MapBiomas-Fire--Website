@@ -37,6 +37,11 @@ class EditNewsComponent extends Component
         $file = $this->photo->store('public/files/photos');
         $foto = $this->photo->hashName();
 
+        // Folder thumbnail dibuat bila belum ada agar penyimpanan tidak gagal.
+        if (!is_dir('storage/files/photos/thumbnail')) {
+            mkdir('storage/files/photos/thumbnail', 0775, true);
+        }
+
         $manager = new ImageManager(new Driver());
 
         // https://image.intervention.io/v3/modifying/resizing

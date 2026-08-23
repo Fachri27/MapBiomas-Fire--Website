@@ -16,6 +16,17 @@
             </div>
         </div>
     </div>
+
+    <h1 class="text-xl font-semibold  text-newbg-newgray-900 dark:text-gray-300 mb-4">Category</h1>
+    <label class="w-full mb-6 block" >
+        {{-- .live wajib: di Livewire 3 wire:model ditunda, jadi tanpa ini
+             pergantian kategori tidak pernah sampai ke server. --}}
+        <select wire:model.live='category' class=" bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border  py-2 px-4 focus:outline-none border-gray-300 dark:border-opacity-20">
+            <option value="monthly">Monthly</option>
+            <option value="annual">Annual</option>
+        </select>
+    </label>
+
     <div  class="overflow-x-auto scrollbar-hide whitespace-nowrap   subpixel-antialiased flex mb-6 justify-end">
         {{-- tabs english --}}
         <div @click="lang='english'" class="hover:bg-gray-200 dark:hover:bg-newgray-700 py-2 px-2 rounded  cursor-pointer"

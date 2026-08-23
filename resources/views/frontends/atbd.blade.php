@@ -15,12 +15,18 @@
     {{-- heroPage --}}
 
     <div class="">
-        <img src="{{ asset('assets/hero-fire.png') }}" alt="Mapbiomas Indonesia - Fire" class=" mt-2 z-10 sm:h-[45vh] h-[30vh] w-full object-top object-cover">
+        <img src="{{ asset('images/hero-fire.jpg') }}" alt="Mapbiomas Indonesia - Fire" class=" z-10 sm:h-[45vh] h-[30vh] w-full object-[center_75%] object-cover">
     </div>
 
     <div class="sm:px-0 px-4">
         <div class="max-w-3xl  mx-auto bg-white relative  -mt-20 z-20 rounded sm:px-6 px-4 sm:py-12 py-4 border-b border-red-600 min-h-[40vh] text-[15px]">
             <a class="text-xl font-semibold ">ATBD</a>
+
+            @include('partials.categoryTabs', [
+                'route' => 'atbd',
+                'active' => $category ?? 'monthly',
+                'label' => __('ATBD category'),
+            ])
 
             {{-- <p class="mt-4 leading-relaxed">Mapbiomas Indonesia | FIRE 1.0 menyajikan data dan peta area terbakar di Indonesia sepanjang 2013-2023, yang diperoleh dengan menganalisis citra satelit Landsat 8 melalui proses komputasi <i>deep learning</i> Deep Neural Network (DNN). Model DNN memaksimalkan kecerdasan buatan (<i>artificial intelligence</i>) dan algoritma <i> machine learning</i> untuk mengklasifikasi fenomena kompleks demi performa yang lebih tinggi, termasuk pemetaan area terbakar (Langford, 2018).</p>
             <p class="mt-4 leading-relaxed">Citra satelit diproses pada Google Earth Engine (GEE) guna menghasilkan mosaik untuk digunakan mengukur nilai spektral area terbakar (dan non-terbakar) yang kemudian dijadikan sebagai dasar pengumpulan <i>training samples</i>. Baik <i>training samples</i> maupun mosaik ditempatkan pada penyimpanan berbasis Google (<i>google drive</i>) yang kemudian diunduh ke server lokal. Kemudian, <i>training samples</i> dijadikan sebagai material untuk melatih DNN mengenali area terbakar pada mosaik.</p>

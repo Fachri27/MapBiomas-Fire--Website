@@ -41,7 +41,8 @@
                 </svg>
             </a>
             <div class="absolute mt-8 z-20 bg-white px-2 py-2 flex flex-col space-y-2 w-52 border-red-600 border-b" x-show="pagesMethodology" x-cloak>
-                <a href="{{ route('atbd', [app()->getLocale()]) }}" class="text-sm mr-6">ATBD</a>
+                <a href="{{ route('atbd', ['lang' => app()->getLocale(), 'cat' => 'monthly']) }}" class="text-sm mr-6">ATBD Monthly</a>
+                <a href="{{ route('atbd', ['lang' => app()->getLocale(), 'cat' => 'annual']) }}" class="text-sm mr-6">ATBD Annual</a>
                 <a href="{{ route('refrencemap', [app()->getLocale()]) }}" class="text-sm mr-6">reference map</a>
             </div>
         </div>
@@ -59,6 +60,7 @@
             <div class="absolute mt-8 z-20 bg-white px-2 py-2 flex flex-col space-y-2 w-52 border-red-600 border-b" x-show="pagesMethodology" x-cloak>
                 <a href="{{ route('downloads', [app()->getLocale()]) }}" class="text-sm mr-6">collection map</a>
                 <a href="{{ route('infographics', [app()->getLocale()]) }}" class="text-sm mr-6">infographics</a>
+                <a href="{{ route('factsheet', [app()->getLocale()]) }}" class="text-sm mr-6">fact sheet</a>
             </div>
         </div>
 

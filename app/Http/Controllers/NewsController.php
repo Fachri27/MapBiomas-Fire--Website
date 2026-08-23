@@ -49,7 +49,7 @@ class NewsController extends Controller
             redirect()->route('index', app()->getLocale());
         }
         $title = $this->getDetailNews($id)->title;
-        $description = $this->getDetailNews($id)->description;
+        $description = strip_tags($this->getDetailNews($id)->description);
         $data = $this->getDetailNews($id);
         // dd($data);
         return view('frontends.detailnews', compact('title', 'description', 'data'));

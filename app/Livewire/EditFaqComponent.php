@@ -27,8 +27,8 @@ class EditFaqComponent extends Component
                 'answerEN' => $this->answerEN,
                 'answerID' => $this->answerID
             ]);
+            Toaster::success('Succesfully update faq');
         }
-        Toaster::success('Succesfully update faq');
     }
 
     public function render()
