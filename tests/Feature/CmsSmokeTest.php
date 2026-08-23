@@ -134,6 +134,13 @@ class CmsSmokeTest extends TestCase
                 ->assertSee('DRAFT-TITLE')
                 ->assertSee('DRAFT-BODY', false)
                 ->assertSee('Pratinjau — berita ini belum dipublikasi');
+
+            // Pratinjau kartu menampilkan thumbnail + judul + deskripsi dua bahasa.
+            $this->withSession(['id' => 1])->get("/cms/previewcardnews/$id")
+                ->assertOk()
+                ->assertSee('storage/files/photos/draf.jpg', false)
+                ->assertSee('JUDUL-DRAFT')
+                ->assertSee('DRAFT-TITLE');
         } finally {
             DB::table('news')->where('id', $id)->delete();
         }

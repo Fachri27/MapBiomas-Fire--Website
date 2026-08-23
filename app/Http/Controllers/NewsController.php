@@ -78,6 +78,35 @@ class NewsController extends Controller
         return view('frontends.detailnews', compact('title', 'description', 'data', 'preview'));
     }
 
+    // Pratinjau kartu kabar: thumbnail, judul, dan deskripsi ditampilkan
+    // persis seperti di landing — berdampingan dalam dua bahasa — supaya
+    // terlihat pas atau tidak sebelum diterbitkan.
+    public function previewcardnews($id){
+        $data = DB::table('news')->where('id', $id)->first();
+        abort_if($data == null, 404);
+
+        $cards = [
+            [
+                'lang' => 'id',
+                'title' => $data->titleID,
+                'description' => strip_tags($data->descriptionID),
+                'date' => \Illuminate\Support\Carbon::parse($data->publishdate)
+                    ->locale('id')->translatedFormat('j F Y'),
+            ],
+            [
+                'lang' => 'en',
+                'title' => $data->titleEN,
+                'description' => strip_tags($data->descriptionEN),
+                'date' => \Illuminate\Support\Carbon::parse($data->publishdate)
+                    ->locale('en')->translatedFormat('j F Y'),
+            ],
+        ];
+
+        $title = 'MapBiomas Fire - preview card news';
+        $nav = 'news';
+        return view('backends.previewcardnews', compact('title', 'nav', 'data', 'cards'));
+    }
+
     public function newsnevent(){
         $title = 'MapBiomas Landy - News & Event';
         $description = "Bagian dari gerakan global MapBiomas Network untuk menghasilkan peta tutupan dan penggunaan lahan tahunan.";
