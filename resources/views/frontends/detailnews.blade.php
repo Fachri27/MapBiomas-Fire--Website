@@ -39,9 +39,12 @@
                  dengan badan teks. Judul tetap lebih besar sebagai judul. --}}
             <a class="font-display text-landy font-light">{{$data->category}}</a>
             <h1 class="font-display text-xl font-semibold text-landy mb-4">{{$data->title}}</h1>
-            <p class="font-display text-[16px] leading-[1.85] text-landy mb-6">{{ strip_tags($data->description) }}</p>
+            <p class="font-display text-[16px] leading-[1.85] text-[#3a3428] mb-6">{{ strip_tags($data->description) }}</p>
             <img src="{{ asset('storage/files/photos/'.$data->img) }}" alt="{{ $data->title }}" class="w-full h-full ">
-            <div class="prose max-w-none mt-4 font-display text-[16px] leading-[1.85] prose-p:text-[16px] prose-p:leading-[1.85] prose-li:text-[16px] prose-li:leading-[1.85] text-[#3a3428]">
+            {{-- Warna isi artikel dikunci #3a3428 via variabel prose, karena
+                 plugin typography mewarnai elemen (p/li/strong/dst.) lewat
+                 --tw-prose-* dan mengabaikan text-* pada pembungkusnya. --}}
+            <div class="prose max-w-none mt-4 font-display text-[16px] leading-[1.85] prose-p:text-[16px] prose-p:leading-[1.85] prose-li:text-[16px] prose-li:leading-[1.85] [--tw-prose-body:#3a3428] [--tw-prose-headings:#3a3428] [--tw-prose-bold:#3a3428] [--tw-prose-links:#3a3428] [--tw-prose-counters:#3a3428] [--tw-prose-bullets:#3a3428] [--tw-prose-hr:#3a3428] [--tw-prose-quotes:#3a3428] [--tw-prose-quote-borders:#3a3428] [--tw-prose-captions:#3a3428]">
                 {!! optional($data)->content !!}
             </div>
 
