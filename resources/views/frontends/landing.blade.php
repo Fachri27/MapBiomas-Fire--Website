@@ -342,11 +342,11 @@
                                     {{ $tanggal($item->publishdate) }}
                                 </p>
 
-                                <h3 class="mt-1 min-h-[26px] font-display text-[18px] font-semibold leading-[26px] text-neutral-900 transition-colors group-hover:text-ember">
+                                <h3 class="mt-1 min-h-[26px] font-display text-[18px] font-bold leading-[26px] text-neutral-900 transition-colors group-hover:text-ember">
                                     {{ $item->title }}
                                 </h3>
 
-                                <div class="mt-2 min-h-[88px] max-w-[60ch] font-display text-[15px] font-normal leading-[22px] text-neutral-500">
+                                <div class="mt-2 min-h-[88px] max-w-[60ch] font-display text-[15px] font-normal leading-[22px] text-black">
                                     {{ strip_tags($item->description) }}
                                 </div>
                             </a>
