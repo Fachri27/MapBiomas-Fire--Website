@@ -65,8 +65,13 @@
 
 
                             <td class=" py-4 break-words text-sm font-bold text-newgray-700 dark:text-gray-300  ">
-                                <div class="px-4 items-center flex ">
-                                    <img src="{{asset('storage/files/photos/thumbnail/'.$item->img)}}" alt="" class="spect-w-16 aspect-h-9  sm:block hidden bg-cover bg-center">
+                                @php $thumb = 'storage/files/photos/thumbnail/' . $item->img; @endphp
+                                <div class="px-4 items-center flex">
+                                    @if ($item->img && file_exists(public_path($thumb)))
+                                        <img src="{{ asset($thumb) }}" alt="{{ $item->titleID }}" class="w-20 aspect-video object-cover rounded sm:block hidden">
+                                    @else
+                                        <span class="text-xs italic text-gray-400">No image</span>
+                                    @endif
                                 </div>
 
                             </td>
