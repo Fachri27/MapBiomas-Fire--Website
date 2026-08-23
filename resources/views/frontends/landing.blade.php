@@ -241,11 +241,11 @@
                                  dan kanan tetap segaris walau labelnya berbeda. --}}
                             <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:gap-[2.6cqw] lg:pt-0">
                                 <a href=""
-                                   class="border border-ember px-3 py-2.5 text-center lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
+                                   class="border border-ember px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                        {{ __('Factsheet') }}
                                 </a>
                                 <a href=""
-                                   class="border border-ember px-3 py-2.5 text-center lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
+                                   class="border border-ember px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                     {{ __('Access The Platform') }}
                                 </a>
                             </div>
@@ -278,11 +278,11 @@
                                  melompat ke baris sendiri. lg: kembali sebaris auto. --}}
                             <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:gap-[2.6cqw] lg:pt-0">
                                 <a href="{{ route('atbd', app()->getLocale()) }}"
-                                    class="border border-white px-3 py-2.5 text-center lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
+                                    class="border border-white px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
                                     {{ __('Methodology') }}
                                 </a>
                                 <a href="https://plataforma.mapbiomas.org/fire/fire_annual?t[regionKey]=indonesia"
-                                   class="border border-white px-3 py-2.5 text-center lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
+                                   class="border border-white px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
                                     {{ __('Access The Platform') }}
                                 </a>
                             </div>
