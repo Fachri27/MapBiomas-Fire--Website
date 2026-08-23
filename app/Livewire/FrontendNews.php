@@ -12,9 +12,9 @@ class FrontendNews extends Component
     public function getSelectNews()
     {
         if (app()->getLocale() == 'id') {
-            return 'id, titleID as title, img, slug, category, descriptionID as description';
+            return 'id, titleID as title, img, slug, category, publishdate, descriptionID as description';
         } else {
-            return 'id, titleEN as title, img, slug, category, descriptionEN as description';
+            return 'id, titleEN as title, img, slug, category, publishdate, descriptionEN as description';
         }
     }
     public function getNews()

@@ -20,7 +20,7 @@
     </div>
 
     <div class="sm:px-0 px-4">
-        <div class="max-w-3xl mx-auto bg-white relative  -mt-20 z-20 rounded sm:px-6 px-4 sm:py-12 py-4 border-b border-landy min-h-[40vh]">
+        <div class="max-w-3xl mx-auto bg-white relative mt-3 z-20 rounded sm:px-6 px-4 py-10 border-b border-landy min-h-[40vh]">
 
             <livewire:frontend-News />
         </div>

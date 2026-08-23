@@ -31,12 +31,17 @@
     </div>
 
     <div class="sm:px-0 px-4">
-        <div class="max-w-3xl mx-auto bg-white relative  -mt-20 z-20 rounded sm:px-6 px-4 sm:py-12 py-4 border-b border-landy min-h-[40vh]">
-            <a class="text-landy font-light">{{$data->category}}</a>
-            <h1 class="text-xl font-semibold text-landy mb-4">{{$data->title}}</h1>
-            <p class="text-landy mb-6 font-light">{{ strip_tags($data->description) }}</p>
+        {{-- Jarak hero→konten 12px (mt-3), sama dengan semua halaman hero
+             lainnya; kartu tidak menimpa gambar hero. --}}
+        <div class="max-w-[820px] mx-auto bg-white relative mt-3 z-20 rounded px-[5vw] py-10 border-b border-landy min-h-[40vh]">
+            {{-- Kategori, judul, dan deskripsi memakai Poppins seperti isi artikel
+                 di bawahnya; deskripsi disamakan persis 16px/1.85 agar menyambung
+                 dengan badan teks. Judul tetap lebih besar sebagai judul. --}}
+            <a class="font-display text-landy font-light">{{$data->category}}</a>
+            <h1 class="font-display text-xl font-semibold text-landy mb-4">{{$data->title}}</h1>
+            <p class="font-display text-[16px] leading-[1.85] text-landy mb-6">{{ strip_tags($data->description) }}</p>
             <img src="{{ asset('storage/files/photos/'.$data->img) }}" alt="{{ $data->title }}" class="w-full h-full ">
-            <div class="prose max-w-none mt-4 sm:text-base text-sm leading-relaxed font-light">
+            <div class="prose max-w-none mt-4 font-display text-[16px] leading-[1.85] prose-p:text-[16px] prose-p:leading-[1.85] prose-li:text-[16px] prose-li:leading-[1.85] text-[#3a3428]">
                 {!! optional($data)->content !!}
             </div>
 

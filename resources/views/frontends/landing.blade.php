@@ -244,7 +244,7 @@
                                    class="border border-ember px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                        {{ __('Factsheet') }}
                                 </a>
-                                <a href=""
+                                <a href="https://fogo-id.geodatin.com/"
                                    class="border border-ember px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                     {{ __('Access The Platform') }}
                                 </a>
@@ -322,33 +322,36 @@
         </section>
 
         {{-- ─────────────────────────  KABAR  ───────────────────────── --}}
-        <section id="kabar" class="ml-[calc(50%-50vw)] w-screen bg-[#f26b61] py-[9%] sm:py-[6.2%]">
+        <section id="kabar" class="ml-[calc(50%-50vw)] w-screen bg-[#fdf0ee] py-[9%] sm:py-[6.2%]">
             <div class="{{ $frame }}">
                 <div class="{{ $shell }}">
                     <h2 class="sr-only">{{ __('Kabar terbaru') }}</h2>
                     <div class="grid gap-[4.5%] gap-y-8 sm:grid-cols-2">
                         @forelse ($news as $i => $item)
-                            {{-- h-full + flex: kartu meregang setinggi baris grid, sehingga
-                                 panel warnanya sama tinggi walau deskripsinya beda panjang. --}}
+                            {{-- Isi kartu langsung di atas latar, tanpa panel terisi.
+                                 Tanggal mendahului judul sebagai penanda waktu. --}}
                             <a href="{{ route('detailnews', [app()->getLocale(), $item->id, $item->slug]) }}"
-                               class="{{ $anim }} group flex h-full flex-col" {!! $reveal($i * 80) !!}>
+                               class="{{ $anim }} group block" {!! $reveal($i * 80) !!}>
                                 <div class="overflow-hidden">
                                     <img src="{{ asset('storage/files/photos/' . $item->img) }}" alt="{{ $item->title }}"
                                          loading="lazy"
                                          class="aspect-[476/268] w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,0.84,0.28,1)] group-hover:scale-[1.04]">
                                 </div>
-                                <div class="flex flex-1 flex-col bg-ember-soft px-[7%] py-5 transition-colors group-hover:bg-white/35">
-                                    <h3 class="font-display text-[clamp(0.95rem,1.15vw,1.3rem)] font-normal leading-snug text-white">
-                                        {{ $item->title }}
-                                    </h3>
-                                    <div class="mt-2 max-w-[60ch] font-display text-[clamp(0.75rem,0.85vw,0.95rem)] font-light leading-relaxed text-white/85">
-                                        {{ strip_tags($item->description) }}
-                                    </div>
-                                    <p class="mt-auto pt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/75">{{ $tanggal($item->publishdate) }}</p>
+
+                                <p class="mt-4 font-display text-[14px] font-medium text-ember">
+                                    {{ $tanggal($item->publishdate) }}
+                                </p>
+
+                                <h3 class="mt-1 min-h-[26px] font-display text-[18px] font-semibold leading-[26px] text-neutral-900 transition-colors group-hover:text-ember">
+                                    {{ $item->title }}
+                                </h3>
+
+                                <div class="mt-2 min-h-[88px] max-w-[60ch] font-display text-[15px] font-normal leading-[22px] text-neutral-500">
+                                    {{ strip_tags($item->description) }}
                                 </div>
                             </a>
                         @empty
-                            <p class="font-display text-white/85">{{ __('Belum ada kabar terbit.') }}</p>
+                            <p class="font-display text-neutral-500">{{ __('Belum ada kabar terbit.') }}</p>
                         @endforelse
                     </div>
                 </div>
