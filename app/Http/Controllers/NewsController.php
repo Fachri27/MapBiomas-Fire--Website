@@ -55,6 +55,29 @@ class NewsController extends Controller
         return view('frontends.detailnews', compact('title', 'description', 'data'));
     }
 
+    // Pratinjau untuk redaksi: berita draf/terjadwal bisa dibuka dari CMS
+    // tanpa harus dipublikasikan lebih dulu.
+    public function previewnews($id){
+        $data = DB::table('news')->where('id', $id)->first();
+        abort_if($data == null, 404);
+
+        if (app()->getLocale() == 'id') {
+            $data->title = $data->titleID;
+            $data->description = $data->descriptionID;
+            $data->content = $data->contentID;
+        } else {
+            $data->title = $data->titleEN;
+            $data->description = $data->descriptionEN;
+            $data->content = $data->contentEN;
+        }
+
+        $title = $data->title;
+        $description = strip_tags($data->description);
+        $preview = ($data->status != 1) || (\Carbon\Carbon::parse($data->publishdate)->isFuture());
+
+        return view('frontends.detailnews', compact('title', 'description', 'data', 'preview'));
+    }
+
     public function newsnevent(){
         $title = 'MapBiomas Landy - News & Event';
         $description = "Bagian dari gerakan global MapBiomas Network untuk menghasilkan peta tutupan dan penggunaan lahan tahunan.";

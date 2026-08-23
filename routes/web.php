@@ -45,6 +45,7 @@ Route::middleware([checkSession::class])->group(function () {
     Route::get('/cms/editinfographic/{id}', [InfographicController::class, 'edit']);
     Route::get('/cms/addnews', [NewsController::class, 'add']);
     Route::get('/cms/editnews/{id}', [NewsController::class, 'edit']);
+    Route::get('/cms/previewnews/{id}', [NewsController::class, 'previewnews']);
     Route::get('/cms/pageabout', [PagesController::class, 'cmsabout']);
     Route::get('/cms/termofuse', [PagesController::class, 'cmstermofuse']);
     Route::get('/cms/cmsrefrencemap', [PagesController::class, 'cmsrefrencemap']);

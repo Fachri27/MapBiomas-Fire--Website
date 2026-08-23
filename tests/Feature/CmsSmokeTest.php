@@ -104,6 +104,42 @@ class CmsSmokeTest extends TestCase
     }
 
     /** @test */
+    public function cms_can_preview_unpublished_news(): void
+    {
+        $this->get('/cms/previewnews/1')->assertRedirect('/cms/login');
+
+        $id = DB::table('news')->insertGetId([
+            'category' => 'news',
+            'publishdate' => now()->addDay()->format('Y-m-d H:i:s'),
+            'titleID' => 'JUDUL-DRAFT',
+            'titleEN' => 'DRAFT-TITLE',
+            'img' => 'draf.jpg',
+            'descriptionID' => '<p>ringkasan draf</p>',
+            'descriptionEN' => '<p>draft summary</p>',
+            'contentID' => '<p>isi draf</p>',
+            'contentEN' => '<p>DRAFT-BODY</p>',
+            'slug' => 'judul-draft',
+            'status' => '0',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        try {
+            // Draf tetap tersembunyi di halaman publik...
+            $this->get('/en')->assertDontSee('DRAFT-TITLE');
+
+            // ...tapi bisa dibuka lewat pratinjau CMS lengkap dengan bannernya.
+            $this->withSession(['id' => 1])->get("/cms/previewnews/$id")
+                ->assertOk()
+                ->assertSee('DRAFT-TITLE')
+                ->assertSee('DRAFT-BODY', false)
+                ->assertSee('Pratinjau — berita ini belum dipublikasi');
+        } finally {
+            DB::table('news')->where('id', $id)->delete();
+        }
+    }
+
+    /** @test */
     public function cms_faq_add_edit_list_work_without_category(): void
     {
         $id = DB::table('faq')->insertGetId([

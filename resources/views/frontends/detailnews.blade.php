@@ -15,6 +15,12 @@
 
     {{-- heroPage --}}
 
+    @if (!empty($preview))
+        <div class="bg-landy py-2 text-center font-display text-sm font-semibold text-white">
+            Pratinjau — berita ini belum dipublikasi
+        </div>
+    @endif
+
     <div class="">
         <img src="{{ asset('images/hero-fire.jpg') }}" alt="Mapbiomas Indonesia - Fire" class=" z-10 sm:h-[45vh] h-[30vh] w-full object-[center_75%] object-cover">
     </div>
