@@ -18,6 +18,11 @@
     @if (!empty($preview))
         <div class="bg-landy py-2 text-center font-display text-sm font-semibold text-white">
             Pratinjau — berita ini belum dipublikasi
+            <span class="ml-4 inline-flex gap-3 text-white/80">
+                <a href="?lang=id" class="@if(app()->getLocale() == 'id') underline font-bold @endif hover:text-white">ID</a>
+                <span aria-hidden="true">|</span>
+                <a href="?lang=en" class="@if(app()->getLocale() == 'en') underline font-bold @endif hover:text-white">EN</a>
+            </span>
         </div>
     @endif
 

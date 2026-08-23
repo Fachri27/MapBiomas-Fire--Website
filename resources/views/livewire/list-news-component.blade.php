@@ -102,12 +102,13 @@
                                     </button>
 
                                     <ul
-                                        class="absolute mt-6  right-0 bg-white rounded-lg shadow-lg block w-24 z-10"
+                                        class="absolute mt-6  right-0 bg-white rounded-lg shadow-lg block w-32 z-10"
                                         x-show.transition="open"
                                         @click.away="open = false"
                                         x-cloak style="display: none !important">
                                         <a  href="{{ url('/cms/previewcardnews/'.$item->id) }}" target="_blank"><li class="block hover:bg-gray-200 cursor-pointer py-1 mt-2 px-4 dark:text-gray-500" @click.away="open = false">Preview Card</li></a>
-                                        <a  href="{{ url('/cms/previewnews/'.$item->id) }}" target="_blank"><li class="block hover:bg-gray-200 cursor-pointer py-1 mt-2 px-4 dark:text-gray-500" @click.away="open = false">Preview</li></a>
+                                        <a  href="{{ url('/cms/previewnews/'.$item->id.'?lang=id') }}" target="_blank"><li class="block hover:bg-gray-200 cursor-pointer py-1 px-4 dark:text-gray-500" @click.away="open = false">Preview ID</li></a>
+                                        <a  href="{{ url('/cms/previewnews/'.$item->id.'?lang=en') }}" target="_blank"><li class="block hover:bg-gray-200 cursor-pointer py-1 px-4 dark:text-gray-500" @click.away="open = false">Preview EN</li></a>
                                         @if (isset($item->url))
                                             <a  href="{{ url('/cms/editeksternal/'.$item->id) }}"><li class="block hover:bg-gray-200 cursor-pointer py-1 mt-2 px-4 dark:text-gray-500" @click.away="open = false">Edit</li></a>
                                         @else

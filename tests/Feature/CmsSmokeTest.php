@@ -129,11 +129,17 @@ class CmsSmokeTest extends TestCase
             $this->get('/en')->assertDontSee('DRAFT-TITLE');
 
             // ...tapi bisa dibuka lewat pratinjau CMS lengkap dengan bannernya.
+            // Default EN, dan versi Indonesia bisa dimuat via ?lang=id.
             $this->withSession(['id' => 1])->get("/cms/previewnews/$id")
                 ->assertOk()
                 ->assertSee('DRAFT-TITLE')
                 ->assertSee('DRAFT-BODY', false)
                 ->assertSee('Pratinjau — berita ini belum dipublikasi');
+
+            $this->withSession(['id' => 1])->get("/cms/previewnews/$id?lang=id")
+                ->assertOk()
+                ->assertSee('JUDUL-DRAFT')
+                ->assertSee('isi draf', false);
 
             // Pratinjau kartu menampilkan thumbnail + judul + deskripsi dua bahasa.
             $this->withSession(['id' => 1])->get("/cms/previewcardnews/$id")
