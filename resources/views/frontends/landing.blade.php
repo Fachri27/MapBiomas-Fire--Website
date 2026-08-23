@@ -47,9 +47,9 @@
     // pindah sebelum rentang, bukan memotongnya jadi "2000-" / "2024".
     $highlights = [
         ['value' => $angka(9.5, 1), 'unit' => __('juta ha'), 'label' => __('2000-2024 burned areas')],
-        ['value' => $angka(40), 'unit' => '%', 'label' => __('2000-2024 burned areas occur on peat land')],
+        ['value' => $angka(40), 'unit' => '%', 'label' => __('2000-2024 burned areas are on peat land')],
         ['value' => $angka(178232), 'unit' => __('ha'), 'label' => __('January-June 2026 burned areas')],
-        ['value' => $angka(21), 'unit' => '%', 'label' => __('January-June 2026 burned areas occur in Kalimantan')],
+        ['value' => $angka(21), 'unit' => '%', 'label' => __('January-June 2026 burned areas are in Kalimantan')],
     ];
 
     /** Tanggal publikasi kabar mengikuti bahasa aktif (id/en). */
@@ -237,11 +237,11 @@
                             {{-- Seluler: dua kolom sama lebar supaya tidak ada yang
                                  melompat ke baris sendiri. lg: kembali sebaris auto. --}}
                             <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:flex lg:flex-nowrap lg:gap-[2.6cqw] lg:pt-0">
-                                <a href="{{ route('factsheet', $lang) }}"
+                                <a href=""
                                    class="border border-ember px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                        {{ __('Factsheet') }}
                                 </a>
-                                <a href="https://plataforma.mapbiomas.org/fire/fire_monthly?t[regionKey]=indonesia"
+                                <a href=""
                                    class="border border-ember px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                     {{ __('Access The Platform') }}
                                 </a>
