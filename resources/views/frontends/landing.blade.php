@@ -236,13 +236,16 @@
 
                             {{-- Seluler: dua kolom sama lebar supaya tidak ada yang
                                  melompat ke baris sendiri. lg: kembali sebaris auto. --}}
-                            <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:flex lg:flex-nowrap lg:gap-[2.6cqw] lg:pt-0">
+                            {{-- Grid dua kolom sama lebar di semua ukuran: lebar tombol jadi
+                                 tidak bergantung panjang labelnya, sehingga tombol kartu kiri
+                                 dan kanan tetap segaris walau labelnya berbeda. --}}
+                            <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:gap-[2.6cqw] lg:pt-0">
                                 <a href=""
-                                   class="border border-ember px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
+                                   class="border border-ember px-3 py-2.5 text-center lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                        {{ __('Factsheet') }}
                                 </a>
                                 <a href=""
-                                   class="border border-ember px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
+                                   class="border border-ember px-3 py-2.5 text-center lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                     {{ __('Access The Platform') }}
                                 </a>
                             </div>
@@ -273,13 +276,13 @@
 
                             {{-- Seluler: dua kolom sama lebar supaya tidak ada yang
                                  melompat ke baris sendiri. lg: kembali sebaris auto. --}}
-                            <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:flex lg:flex-nowrap lg:gap-[2.6cqw] lg:pt-0">
+                            <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:gap-[2.6cqw] lg:pt-0">
                                 <a href="{{ route('atbd', app()->getLocale()) }}"
-                                    class="border border-white px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
+                                    class="border border-white px-3 py-2.5 text-center lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
                                     {{ __('Methodology') }}
                                 </a>
                                 <a href="https://plataforma.mapbiomas.org/fire/fire_annual?t[regionKey]=indonesia"
-                                   class="border border-white px-3 py-2.5 text-center lg:whitespace-nowrap lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
+                                   class="border border-white px-3 py-2.5 text-center lg:px-[6.9cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-white transition-colors hover:bg-white hover:text-neutral-900">
                                     {{ __('Access The Platform') }}
                                 </a>
                             </div>
@@ -296,13 +299,15 @@
                  empat balok setinggi layar. --}}
             <div class="{{ $shell }} grid grid-cols-2 gap-2 sm:gap-x-[2.7%] sm:gap-y-6 xl:grid-cols-4 text-center">
                 @foreach ($highlights as $i => $tile)
-                    <div class="{{ $anim }} flex flex-col justify-center bg-ember px-4 py-5 sm:aspect-[349/197] sm:px-[8%] sm:py-0"
+{{-- justify-start, bukan center: dengan center, ubin yang labelnya lebih
+                              pendek ikut turun sehingga angka antar ubin tidak sebaris. --}}
+                    <div class="{{ $anim }} flex flex-col justify-start bg-ember-soft px-4 pb-5 pt-7 sm:aspect-[349/197] sm:px-[8%] sm:pb-[7%] sm:pt-[11%]"
                          {!! $reveal($i * 90) !!}>
                         {{-- Skala disetel agar nilai terpanjang (232.996) tetap muat; ukurannya
                              dibuat seragam supaya keempat ubin terbaca sebagai satu set.
                              Batas atasnya disetel agar kombinasi terpanjang ("9.5 million ha"
                              pada versi Inggris) tetap muat bersanding, tidak turun baris. --}}
-                        <p class="font-display text-[clamp(1.2rem,1.9vw,1.875rem)] font-light leading-none text-white">
+                        <p class="font-display text-[clamp(1.2rem,1.9vw,1.875rem)] font-bold leading-none text-white">
                             {{-- Semua satuan seukuran angkanya. Bedanya hanya jarak:
                                  "%" menempel karena ia simbol, satuan berupa kata
                                  dipisah spasi supaya tidak menyatu jadi satu kata. --}}
@@ -317,7 +322,7 @@
         </section>
 
         {{-- ─────────────────────────  KABAR  ───────────────────────── --}}
-        <section id="kabar" class="ml-[calc(50%-50vw)] w-screen bg-ember py-[9%] sm:py-[6.2%]">
+        <section id="kabar" class="ml-[calc(50%-50vw)] w-screen bg-[#f26b61] py-[9%] sm:py-[6.2%]">
             <div class="{{ $frame }}">
                 <div class="{{ $shell }}">
                     <h2 class="sr-only">{{ __('Kabar terbaru') }}</h2>
