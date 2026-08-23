@@ -56,12 +56,16 @@ class NewsController extends Controller
     }
 
     // Pratinjau untuk redaksi: berita draf/terjadwal bisa dibuka dari CMS
-    // tanpa harus dipublikasikan lebih dulu.
+    // tanpa harus dipublikasikan lebih dulu. Rute CMS tidak melewati
+    // middleware bahasa, jadi versi bahasa dipilih lewat query ?lang=.
     public function previewnews($id){
         $data = DB::table('news')->where('id', $id)->first();
         abort_if($data == null, 404);
 
-        if (app()->getLocale() == 'id') {
+        $lang = request()->query('lang') === 'id' ? 'id' : 'en';
+        app()->setLocale($lang);
+
+        if ($lang == 'id') {
             $data->title = $data->titleID;
             $data->description = $data->descriptionID;
             $data->content = $data->contentID;
