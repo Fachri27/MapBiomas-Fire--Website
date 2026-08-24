@@ -244,7 +244,7 @@
                                    class="border border-ember px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                        {{ __('Factsheet') }}
                                 </a>
-                                <a href="https://fogo-id.geodatin.com/"
+                                <a href="https://plataform.firemonitor-id.mapbiomas.org/"
                                    class="border border-ember px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                     {{ __('Access The Platform') }}
                                 </a>
