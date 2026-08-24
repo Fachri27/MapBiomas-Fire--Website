@@ -153,18 +153,20 @@ class LandingPageTest extends TestCase
             ->assertDontSee('Terjadwal');
     }
 
-    public function test_kabar_tidak_memuat_agenda(): void
+    public function test_kabar_memuat_terbaru_dari_semua_kategori(): void
     {
-        $this->terbitkanBerita(['titleEN' => 'Berita biasa']);
+        // Event yang sudah terbit juga layak muncul sebagai kabar terbaru.
         $this->terbitkanBerita([
             'titleEN' => 'Agenda lokakarya',
             'category' => 'event',
             'slug' => 'agenda',
+            'publishdate' => Carbon::now('Asia/Jakarta')->subHours(2)->format('Y-m-d H:i:s'),
         ]);
+        $this->terbitkanBerita(['titleEN' => 'Berita biasa']);
 
         $this->get('/en')
-            ->assertSee('Berita biasa')
-            ->assertDontSee('Agenda lokakarya');
+            ->assertSee('Agenda lokakarya')
+            ->assertSee('Berita biasa');
     }
 
     public function test_kabar_dibatasi_dua_dan_terbaru_lebih_dulu(): void
