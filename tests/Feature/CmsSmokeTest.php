@@ -8,6 +8,8 @@ use App\Livewire\EditFactsheetComponent;
 use App\Livewire\EditFaqComponent;
 use App\Livewire\FactsheetComponent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -86,6 +88,66 @@ class CmsSmokeTest extends TestCase
             ->call('storeAksi');
 
         // Kategori kosong → tidak tersimpan.
+        $this->assertSame(0, DB::table('factsheet')->count());
+    }
+
+    /** @test */
+    public function cms_factsheet_add_stores_uploaded_pdf(): void
+    {
+        // store() menulis ke disk default (local), bukan disk 'public'.
+        Storage::fake('local');
+
+        Livewire::test(AddFactsheetComponent::class)
+            ->set('category', 'monthly')
+            ->set('titleID', 'PDF-ID')
+            ->set('titleEN', 'PDF-EN')
+            ->set('descriptionID', 'desc-id')
+            ->set('descriptionEN', 'desc-en')
+            // Link sengaja kosong: PDF saja sudah cukup.
+            ->set('pdf', UploadedFile::fake()->create('factsheet.pdf', 200, 'application/pdf'))
+            ->call('storeAksi')
+            ->assertRedirect('/cms/listfactsheet');
+
+        $row = DB::table('factsheet')->where('titleEN', 'PDF-EN')->first();
+        $this->assertNotNull($row);
+        $this->assertNotEmpty($row->file);
+        $this->assertSame('', $row->link);
+        Storage::disk('local')->assertExists('public/files/factsheet/'.$row->file);
+    }
+
+    /** @test */
+    public function cms_factsheet_rejects_non_pdf_upload(): void
+    {
+        Storage::fake('local');
+
+        Livewire::test(AddFactsheetComponent::class)
+            ->set('pdf', UploadedFile::fake()->image('bukan.jpg'))
+            ->assertSet('pdf', null);
+    }
+
+    /** @test */
+    public function cms_factsheet_rejects_pdf_over_50mb(): void
+    {
+        Storage::fake('local');
+
+        Livewire::test(AddFactsheetComponent::class)
+            ->set('pdf', UploadedFile::fake()->create('gede.pdf', 51201, 'application/pdf'))
+            ->assertSet('pdf', null);
+
+        // Tepat di batas masih diterima.
+        Livewire::test(AddFactsheetComponent::class)
+            ->set('pdf', UploadedFile::fake()->create('pas.pdf', 51200, 'application/pdf'))
+            ->assertNotSet('pdf', null);
+    }
+
+    /** @test */
+    public function cms_factsheet_add_does_not_redirect_when_invalid(): void
+    {
+        Livewire::test(AddFactsheetComponent::class)
+            ->set('category', 'monthly')
+            ->call('storeAksi')
+            ->assertNoRedirect();
+
         $this->assertSame(0, DB::table('factsheet')->count());
     }
 
@@ -233,7 +295,7 @@ class CmsSmokeTest extends TestCase
     {
         $this->get('/en/factsheet')
             ->assertOk()
-            ->assertSee(__('Belum ada fact sheet terbit.'));
+            ->assertSee(__('Belum ada factsheet terbit.'));
     }
 
     /** @test */

@@ -9,7 +9,7 @@
     {{-- @include('partials.langswitcherDetail') --}}
     @include('partials.navMobile')
     <div class="bg-white sticky top-0 z-50">
-        @include('partials.detailNavPc')
+        @include('partials.navPC')
     </div>
     <div class="border-b-[0.4px] border-landy"></div>
 

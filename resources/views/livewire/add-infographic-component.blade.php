@@ -48,6 +48,11 @@
                     <input id="publishdate" type="text" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border  py-2 px-4 focus:outline-none border-gray-300 dark:border-opacity-20 "  wire:model.defer='publishdate' placeholder="Date. . . ">
                     </div>
 
+                    {{-- Bulan data yang digambarkan, bukan tanggal terbit. Kosongkan
+                         untuk memakai bulan publish date. --}}
+                    <h1 class="text-xl font-semibold  text-newbg-newgray-900 dark:text-gray-300 mb-4 mt-6">Data Month</h1>
+                    <input type="month" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border  py-2 px-4 focus:outline-none border-gray-300 dark:border-opacity-20 " wire:model.defer='period'>
+
                     <h1 class="text-xl font-semibold  text-newbg-newgray-900 dark:text-gray-300 mb-4 mt-6">Status</h1>
                     <label class="w-full"  >
                         <select wire:model='isactive' class=" mb-6 bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border  py-2 px-4 focus:outline-none border-gray-300 dark:border-opacity-20">

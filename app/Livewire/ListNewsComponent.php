@@ -4,14 +4,17 @@ namespace App\Livewire;
 
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
 class ListNewsComponent extends Component
 {
+    use WithPagination;
+
     public $deleteName, $deleteID, $deleter;
     public  $paginate = 10, $query = '';
-     // refresh page on search
-    public function search(){
+     // Hook Livewire: dipicu wire:model.live pada input pencarian.
+    public function updatedQuery(){
         $this->resetPage();
     }
     public function closeDelete(){

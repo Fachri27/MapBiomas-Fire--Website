@@ -4,10 +4,18 @@ namespace App\Livewire;
 
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class FrontendNews extends Component
 {
+    use WithPagination;
+
     public $paginate = 10, $category = 'all', $query = '';
+
+    // Hook Livewire: dipicu wire:model.live pada select kategori.
+    public function updatedCategory(){
+        $this->resetPage();
+    }
 
     public function getSelectNews()
     {

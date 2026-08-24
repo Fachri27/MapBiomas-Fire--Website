@@ -1,38 +1,6 @@
 @php
     $lang = app()->getLocale();
 
-    // Susunan dan label mengikuti partials/navPC agar menu landing sama dengan
-    // halaman lain. ATBD tetap terpisah monthly/annual karena halamannya
-    // memang membedakan keduanya lewat query 'cat'.
-    $nav = [
-        ['label' => __('about'), 'href' => route('about', $lang)],
-        ['label' => __('FAQ'), 'href' => route('faq', $lang)],
-        [
-            'label' => __('map & data'),
-            'children' => [
-                ['label' => __('terms of use'), 'href' => route('termsofuse', $lang)],
-                ['label' => __('platform/map'), 'href' => 'https://plataforma.mapbiomas.org/fire/fire_annual?t[regionKey]=indonesia'],
-            ],
-        ],
-        [
-            'label' => __('methodology'),
-            'children' => [
-                ['label' => __('ATBD Monthly'), 'href' => route('atbd', ['lang' => $lang, 'cat' => 'monthly'])],
-                ['label' => __('ATBD Annual'), 'href' => route('atbd', ['lang' => $lang, 'cat' => 'annual'])],
-                ['label' => __('reference map'), 'href' => route('refrencemap', $lang)],
-            ],
-        ],
-        ['label' => __('news & event'), 'href' => route('newsnevent', $lang)],
-        [
-            'label' => __('downloads'),
-            'children' => [
-                ['label' => __('collection map'), 'href' => route('downloads', $lang)],
-                ['label' => __('infographics'), 'href' => route('infographics', $lang)],
-                ['label' => __('factsheet'), 'href' => route('factsheet', $lang)],
-            ],
-        ],
-    ];
-
     /** Angka diambil dari infografis Koleksi 1 pada berkas desain. */
     /**
      * Angka dieja mengikuti lokal: Indonesia memakai koma desimal dan titik
@@ -73,6 +41,20 @@
     $reveal = fn (int $delay = 0): string => 'x-data="{ shown: false }" x-intersect.once="shown = true" '
         .':class="shown ? \'opacity-100 translate-y-0\' : \'opacity-0 translate-y-6\'" '
         .'style="transition-delay: '.$delay.'ms"';
+
+    /**
+     * Berkas foto bisa hilang: baris CMS lama, unggahan yang gagal, atau
+     * environment yang belum menjalankan storage:link. Gambar rusak lebih
+     * buruk daripada tidak ada gambar, jadi tampilkan placeholder.
+     */
+    $adaFoto = fn (?string $img): bool => $img && file_exists(public_path('storage/files/photos/'.$img));
+
+    /**
+     * Kolom EN nullable (titleEN, descriptionEN), kolom ID tidak. Jadi hanya
+     * halaman /en yang bisa kebagian teks kosong — tanpa fallback, strip_tags
+     * menerima null dan kartunya tampil melompong.
+     */
+    $teks = fn (?string $isi, string $ganti): string => trim(strip_tags((string) $isi)) ?: $ganti;
 
     $anim = 'transition duration-700 ease-[cubic-bezier(0.16,0.84,0.28,1)]';
     $shell = 'mx-auto w-[90%] max-w-[1520px]';
@@ -120,86 +102,8 @@
          6 item tidak muat sebaris. --}}
     @include('partials.navMobile', ['hideFrom' => 'lg'])
 
-    {{-- ─────────────────────────  HEADER  ───────────────────────── --}}
-    <header
-        x-data="{ scrolled: false }"
-        x-on:scroll.window="scrolled = window.scrollY > 40"
-        class="fixed inset-x-0 top-0 z-50 hidden border-b border-ember transition-colors duration-300 lg:block"
-        :class="scrolled ? 'bg-white/[0.92] backdrop-blur' : 'bg-transparent'"
-    >
-        <div class="{{ $frame }}">
-
-            {{-- Pengalih bahasa: tab yang menggantung dari tepi atas, sejajar
-                 tepi kanan konten — pola yang sama dengan partials/navPC. --}}
-            <div class="{{ $shell }} flex justify-end">
-                <div class="flex items-center gap-5 rounded-b bg-ember px-9 py-1 font-display text-sm leading-6"
-                     role="group" aria-label="Pilihan bahasa">
-                    <a href="{{ route('index', 'en') }}" hreflang="en"
-                       @if (app()->getLocale() === 'en') aria-current="true" @endif
-                       class="@if (app()->getLocale() === 'en') font-semibold text-white @else text-white/55 transition-colors hover:text-white @endif">English</a>
-                    <a href="{{ route('index', 'id') }}" hreflang="id"
-                       @if (app()->getLocale() === 'id') aria-current="true" @endif
-                       class="@if (app()->getLocale() === 'id') font-semibold text-white @else text-white/55 transition-colors hover:text-white @endif">Indonesia</a>
-                </div>
-            </div>
-
-            <div class="{{ $shell }} flex items-center justify-between gap-6 py-2.5 lg:py-3.5">
-                {{-- Dua varian logo ditumpuk lalu disilangkan mengikuti header:
-                     saat transparan dipakai versi teks putih agar "MAP" dan
-                     "INDONESIA | FIRE" tetap terbaca di atas foto. --}}
-                <a href="{{ route('index', app()->getLocale()) }}" class="relative block shrink-0">
-                    <img src="{{ asset('images/mapbiomas-fire.png') }}"
-                         alt="MapBiomas Indonesia Fire, ke beranda"
-                         class="h-8 w-auto transition-opacity duration-300 lg:h-11"
-                         :class="scrolled ? 'opacity-100' : 'opacity-0'">
-                    <img src="{{ asset('images/mapbiomas-fire-on-dark.png') }}" alt="" aria-hidden="true"
-                         class="absolute inset-0 h-8 w-auto transition-opacity duration-300 lg:h-11"
-                         :class="scrolled ? 'opacity-0' : 'opacity-100'">
-                </a>
-
-                <nav class="flex items-center gap-4 xl:gap-7" aria-label="Navigasi utama">
-                    @foreach ($nav as $i => $item)
-                        @if (isset($item['children']))
-                            <div class="relative" x-data="{ sub: false }"
-                                 x-on:click.outside="sub = false"
-                                 x-on:keydown.escape.window="sub = false">
-                                <button type="button" aria-haspopup="true"
-                                        x-on:click="sub = !sub"
-                                        :aria-expanded="sub.toString()"
-                                        class="flex cursor-pointer items-center gap-1.5 font-display text-[15px] font-semibold text-ember transition-colors hover:text-ember-soft">
-                                    {{ $item['label'] }}
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8" fill="none" aria-hidden="true"
-                                         class="h-2 w-3 transition-transform duration-200"
-                                         :class="sub ? 'rotate-180' : ''">
-                                        <path d="M1 1.5 6 6.5 11 1.5" stroke="currentColor" stroke-width="1.6"/>
-                                    </svg>
-                                </button>
-                                <div x-show="sub" x-cloak
-                                     x-transition:enter="transition ease-out duration-150"
-                                     x-transition:enter-start="opacity-0 -translate-y-1"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
-                                     {{-- tanpa padding: isian hover item menempel ke garis tepi panel --}}
-                                     class="absolute left-0 top-full z-50 mt-3 w-56 border border-ember bg-white">
-                                    @foreach ($item['children'] as $child)
-                                        <a href="{{ $child['href'] }}" x-on:click="sub = false"
-                                           class="block px-5 py-2.5 font-display text-sm font-semibold text-ember transition-colors hover:bg-ember hover:text-white">
-                                            {{ $child['label'] }}
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @else
-                            <a href="{{ $item['href'] }}"
-                               class="font-display text-[15px] font-semibold text-ember transition-colors hover:text-ember-soft">
-                                {{ $item['label'] }}
-                            </a>
-                        @endif
-                    @endforeach
-                </nav>
-            </div>
-        </div>
-
-    </header>
+    {{-- Navbar sama dengan halaman lain; varian overlay mengambang di atas hero. --}}
+    @include('partials.navPC', ['overlay' => true])
 
     <main>
         {{-- ─────────────────────────  HERO  ─────────────────────────
@@ -333,9 +237,19 @@
                             <a href="{{ route('detailnews', [app()->getLocale(), $item->id, $item->slug]) }}"
                                class="{{ $anim }} group block" {!! $reveal($i * 80) !!}>
                                 <div class="overflow-hidden">
-                                    <img src="{{ asset('storage/files/photos/' . $item->img) }}" alt="{{ $item->title }}"
-                                         loading="lazy"
-                                         class="aspect-[476/268] w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,0.84,0.28,1)] group-hover:scale-[1.04]">
+                                    @if ($adaFoto($item->img))
+                                        <img src="{{ asset('storage/files/photos/' . $item->img) }}" alt="{{ $item->title }}"
+                                             loading="lazy"
+                                             class="aspect-[476/268] w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,0.84,0.28,1)] group-hover:scale-[1.04]">
+                                    @else
+                                        {{-- Rasio disamakan dengan foto asli supaya tata letak
+                                             kartu tidak melompat saat gambarnya tidak ada. --}}
+                                        <div class="flex aspect-[476/268] w-full items-center justify-center bg-cloud">
+                                            <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400">
+                                                {{ __('Gambar belum tersedia') }}
+                                            </span>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <p class="mt-4 font-display text-[14px] font-medium text-ember">
@@ -343,11 +257,11 @@
                                 </p>
 
                                 <h3 class="mt-1 min-h-[26px] font-display text-[18px] font-bold leading-[26px] text-neutral-900 transition-colors group-hover:text-ember">
-                                    {{ $item->title }}
+                                    {{ $teks($item->title, __('Tanpa judul')) }}
                                 </h3>
 
                                 <div class="mt-2 min-h-[88px] max-w-[60ch] font-display text-[15px] font-normal leading-[22px] text-black">
-                                    {{ strip_tags($item->description) }}
+                                    {{ $teks($item->description, __('Belum ada ringkasan.')) }}
                                 </div>
                             </a>
                         @empty
@@ -361,7 +275,7 @@
         {{-- ─────────────────────────  INFOGRAFIS  ───────────────────────── --}}
         <section id="data" class="bg-white py-[7%] sm:py-[4%]" x-data="{ zoom: false }">
             <div class="{{ $shell }}">
-                @if ($infographic)
+                @if ($infographic && $adaFoto($infographic->img))
                     <button type="button" x-on:click="zoom = true"
                             class="{{ $anim }} block w-full cursor-zoom-in" {!! $reveal() !!}
                             aria-label="Perbesar infografis {{ $infographic->title }}">
@@ -374,6 +288,14 @@
                             {{ __('Tap to enlarge') }}
                         </span>
                     </button>
+                @elseif ($infographic)
+                    {{-- Barisnya terbit tapi berkas gambarnya hilang; judul dan
+                         keterangan di bawah tetap ditampilkan. --}}
+                    <div class="{{ $anim }} flex aspect-[16/9] w-full items-center justify-center bg-cloud" {!! $reveal() !!}>
+                        <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400">
+                            {{ __('Gambar belum tersedia') }}
+                        </span>
+                    </div>
                 @else
                     <p class="{{ $anim }} py-16 text-center font-display text-neutral-400" {!! $reveal() !!}>
                         {{ __('Belum ada infografis terbit.') }}
@@ -382,18 +304,23 @@
 
                 @if ($infographic)
                     <div class="{{ $anim }} mt-8" {!! $reveal(120) !!}>
-                        <p class="font-display text-[clamp(1rem,1.15vw,1.3rem)] font-normal text-black">
-                            {{ $infographic->title }}
+                        {{-- Infografis di sini selalu yang terbaru, jadi bulan datanya
+                             ditulis agar pembaca tahu periode yang sedang dilihat. --}}
+                        <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-ember">
+                            {{ \App\Livewire\FrontendInfographic::monthLabel($infographic->period, $infographic->publishdate) }}
+                        </p>
+                        <p class="mt-2 font-display text-[clamp(1rem,1.15vw,1.3rem)] font-normal text-black">
+                            {{ $teks($infographic->title, __('Tanpa judul')) }}
                         </p>
                         <div class="mt-3 max-w-[70ch] font-display text-[clamp(0.75rem,0.85vw,0.95rem)] font-light leading-relaxed text-neutral-500">
-                            {{ strip_tags($infographic->description) }}
+                            {{ $teks($infographic->description, __('Belum ada ringkasan.')) }}
                         </div>
                     </div>
                 @endif
             </div>
 
             {{-- Infografis penuh: teksnya kecil, jadi bisa dibuka besar. --}}
-            @if ($infographic)
+            @if ($infographic && $adaFoto($infographic->img))
                 <div x-show="zoom" x-cloak x-on:keydown.escape.window="zoom = false"
                      {{-- .self: hanya klik pada latarnya yang menutup, bukan klik
                           yang merambat dari elemen lain. --}}

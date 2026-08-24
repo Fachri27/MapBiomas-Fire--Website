@@ -14,11 +14,13 @@ class EditInfographicComponent extends Component
     use WithFileUploads;
     public $publishdate, $titleID, $titleEN, $photoID, $photoEN, $isactive, $descriptionID, $descriptionEN, $idInfographic;
     public $uphotoID, $uphotoEN;
+    public $period;
 
     public function mount($id){
         $this->idInfographic = $id;
         $data = DB::table('infographic')->where('id', $id)->first();
         $this->publishdate = $data->publishdate;
+        $this->period = $data->period;
         $this->titleEN = $data->titleEN;
         $this->titleID = $data->titleID;
         $this->descriptionID = $data->descriptionID;
@@ -95,6 +97,7 @@ class EditInfographicComponent extends Component
             ->where('id', $this->idInfographic)
             ->update([
                 'publishdate' => $this->publishdate,
+                'period' => $this->period ?: null,
                 'titleID' => $this->titleID,
                 'titleEN' => $this->titleEN,
                 'descriptionID' => $this->descriptionID,

@@ -23,7 +23,7 @@ class FrontendPagesTest extends TestCase
             'contentEN' => '<p>English content.</p>',
         ];
 
-        // Fact sheet tidak lagi menyimpan satu blok konten, melainkan
+        // Factsheet tidak lagi menyimpan satu blok konten, melainkan
         // judul, deskripsi, dan tautan unduhan per kategori.
         if ($tabel === 'factsheet') {
             $default = [
@@ -92,7 +92,7 @@ class FrontendPagesTest extends TestCase
     {
         return [
             'ATBD' => ['atbd', 'pageatbd', 'contentID'],
-            'fact sheet' => ['factsheet', 'factsheet', 'descriptionID'],
+            'factsheet' => ['factsheet', 'factsheet', 'descriptionID'],
         ];
     }
 
@@ -186,10 +186,10 @@ class FrontendPagesTest extends TestCase
     // ── Navbar bersama ────────────────────────────────────────────────────
 
     /**
-     * navPC, navMobile, dan detailNavPc harus menjangkau tujuan yang sama.
-     * Halaman biasa memakai dua yang pertama, halaman detail memakai yang ketiga.
+     * Beranda, halaman biasa, dan halaman detail memakai partials/navPC yang
+     * sama — dulu tiga salinan terpisah yang pelan-pelan berbeda isinya.
      */
-    public function test_navbar_halaman_biasa_dan_halaman_detail_menjangkau_tujuan_yang_sama(): void
+    public function test_navbar_beranda_halaman_biasa_dan_detail_menjangkau_tujuan_yang_sama(): void
     {
         $id = $this->terbitkanBerita();
 
@@ -199,12 +199,37 @@ class FrontendPagesTest extends TestCase
             '/en/downloads', '/en/infographics', '/en/factsheet',
         ];
 
-        $biasa = $this->get(route('about', 'en'));
-        $detail = $this->get(route('detailnews', ['en', $id, 'judul-berita']));
+        $halaman = [
+            'beranda' => $this->get(route('index', 'en')),
+            'biasa' => $this->get(route('about', 'en')),
+            'detail' => $this->get(route('detailnews', ['en', $id, 'judul-berita'])),
+        ];
 
-        foreach ($tujuan as $t) {
-            $biasa->assertSee($t, false);
-            $detail->assertSee($t, false);
+        foreach ($halaman as $nama => $res) {
+            $res->assertOk();
+            foreach ($tujuan as $t) {
+                $res->assertSee($t, false, "tujuan $t hilang dari navbar halaman $nama");
+            }
+        }
+    }
+
+    /**
+     * Label menu juga harus sama di ketiga halaman: dulu beranda dan halaman
+     * lain menulis label yang sama dengan ejaan berbeda.
+     */
+    public function test_label_menu_sama_di_semua_halaman(): void
+    {
+        $id = $this->terbitkanBerita();
+
+        $label = ['about', 'FAQ', 'map &amp; data', 'methodology', 'news &amp; event',
+                  'downloads', 'terms of use', 'reference map', 'factsheet'];
+
+        foreach ([route('index', 'en'), route('about', 'en'),
+                  route('detailnews', ['en', $id, 'judul-berita'])] as $url) {
+            $res = $this->get($url)->assertOk();
+            foreach ($label as $l) {
+                $res->assertSee($l, false);
+            }
         }
     }
 

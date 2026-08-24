@@ -12,6 +12,7 @@ use Masmerise\Toaster\Toaster;
 class AddInfographicComponent extends Component
 {
     use WithFileUploads;
+    public $period;
     public $publishdate, $titleID, $titleEN, $descriptionID, $descriptionEN, $photoID, $photoEN, $isactive=0;
 
     public function uploadImageID(){
@@ -45,6 +46,7 @@ class AddInfographicComponent extends Component
         if($this->manualValidation()){
             DB::table('infographic')->insert([
                 'publishdate' => $this->publishdate,
+                'period' => $this->period ?: null,
                 'titleID' => $this->titleID,
                 'titleEN' => $this->titleEN,
                 'slug' => Str::slug($this->titleID,'-'),

@@ -4,11 +4,20 @@ namespace App\Livewire;
 
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\WithFileUploads;
 use Masmerise\Toaster\Toaster;
 
 class AddFactsheetComponent extends Component
 {
-    public $category, $titleEN, $titleID, $descriptionEN, $descriptionID, $link;
+    use WithFileUploads;
+
+    public $category, $titleEN, $titleID, $descriptionEN, $descriptionID, $link, $pdf;
+
+    public function updatedPdf($file){
+        if (! $this->pdfValid($file)) {
+            $this->reset('pdf');
+        }
+    }
 
     public function storeAksi(){
         if($this->manualValidation()){
@@ -18,17 +27,41 @@ class AddFactsheetComponent extends Component
                 'titleEN' => $this->titleEN,
                 'descriptionID' => $this->descriptionID,
                 'descriptionEN' => $this->descriptionEN,
-                'link' => $this->link,
+                // Kolom NOT NULL: kalau hanya PDF yang diunggah, simpan string kosong.
+                'link' => $this->link ?? '',
+                'file' => $this->uploadPdf(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+            redirect()->to('/cms/listfactsheet');
         }
-        redirect()->to('/cms/listfactsheet');
     }
 
     public function render()
     {
         return view('livewire.add-factsheet-component');
+    }
+
+    public function uploadPdf(){
+        if (! $this->pdf) {
+            return null;
+        }
+        // Disk eksplisit: disk sementara Livewire berbeda saat pengujian.
+        $this->pdf->store('public/files/factsheet', 'local');
+        return $this->pdf->hashName();
+    }
+
+    public function pdfValid($file){
+        if (strtolower($file->getClientOriginalExtension()) !== 'pdf') {
+            Toaster::error('File must be a PDF!');
+            return false;
+        }
+        // Batas 50MB disetel juga di config/livewire.php; tolak lebih awal dengan pesan jelas.
+        if ($file->getSize() > 50 * 1024 * 1024) {
+            Toaster::error('PDF is too large (max 50MB)!');
+            return false;
+        }
+        return true;
     }
 
     public function manualValidation(){
@@ -47,8 +80,10 @@ class AddFactsheetComponent extends Component
         }elseif($this->descriptionEN == '' ){
             Toaster::error('Description english is required!');
             return;
-        }elseif($this->link == '' ){
-            Toaster::error('Link is required!');
+        }elseif($this->link == '' && ! $this->pdf ){
+            Toaster::error('Upload a PDF or fill the link!');
+            return;
+        }elseif($this->pdf && ! $this->pdfValid($this->pdf) ){
             return;
         }
         return true;

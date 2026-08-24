@@ -9,29 +9,29 @@ use Illuminate\Support\Facades\DB;
 class FactsheetController extends Controller
 {
     public function index(){
-        $title = 'MapBiomas Fire - fact sheet';
-        $nav = 'fact sheet';
+        $title = 'MapBiomas Fire - factsheet';
+        $nav = 'factsheet';
         return view('backends.factsheet', compact('title', 'nav'));
     }
 
     public function add(){
-        $title = 'MapBiomas Fire - add fact sheet';
-        $nav = 'fact sheet';
+        $title = 'MapBiomas Fire - add factsheet';
+        $nav = 'factsheet';
         return view('backends.addfactsheet', compact('title', 'nav'));
     }
 
     public function edit($id){
-        $title = 'MapBiomas Fire - edit fact sheet';
-        $nav = 'fact sheet';
+        $title = 'MapBiomas Fire - edit factsheet';
+        $nav = 'factsheet';
         $idFactsheet = $id;
         return view('backends.editfactsheet', compact('title', 'nav', 'idFactsheet'));
     }
 
     public function getSelect(){
         if (App::getLocale() == 'id') {
-            return 'id, link, titleID as title, descriptionID as description';
+            return 'id, link, file, titleID as title, descriptionID as description';
         }else{
-            return 'id, link, titleEN as title, descriptionEN as description';
+            return 'id, link, file, titleEN as title, descriptionEN as description';
         }
     }
 
@@ -39,7 +39,7 @@ class FactsheetController extends Controller
         $cat = $request->query('cat');
         $category = in_array($cat, ['monthly', 'annual']) ? $cat : 'monthly';
 
-        $title = 'MapBiomas Fire - Fact Sheet';
+        $title = 'MapBiomas Fire - Factsheet';
         $description = "Inisiatif MapBiomas Fire dimulai sejak 2023, bersama sembilan jaringan organisasi masyarakat sipil (CSO) yang dikoordinasi oleh Auriga Nusantara dan Woods and Wayside International (WWI). MapBiomas Fire memetakan kebakaran menggunakan teknologi komputasi yang didukung algoritma machine learning dan deep learning.";
         $sheets = DB::table('factsheet')
                 ->selectRaw($this->getSelect())

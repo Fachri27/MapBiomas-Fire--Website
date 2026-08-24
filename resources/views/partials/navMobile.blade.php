@@ -1,20 +1,10 @@
 <!-- {{-- nav mobile --}} -->
 @php
-    /* Titik laci berhenti tampil. Default 'sm' seperti halaman lama; landing
-       memakai 'lg' karena menunya baru muat penuh di atas 1024px. Kelasnya
-       ditulis utuh agar terbaca pemindai Tailwind. */
-    $mobileOnly = ($hideFrom ?? 'sm') === 'lg' ? 'lg:hidden' : 'sm:hidden';
+    /* Titik laci berhenti tampil. Baku 'lg' karena navPC baru muncul di lg —
+       kalau laci berhenti di sm, layar 640-1024px tidak punya navigasi sama
+       sekali. Kelasnya ditulis utuh agar terbaca pemindai Tailwind. */
+    $mobileOnly = ($hideFrom ?? 'lg') === 'sm' ? 'sm:hidden' : 'lg:hidden';
 
-    /* Tautan bahasa untuk rute yang sedang dibuka. Parameter rute ikut dibawa
-       supaya halaman detail berita (yang perlu id & slug) tidak error, dan
-       query dipertahankan agar ?cat= pada FAQ/ATBD tidak hilang. Halaman CMS
-       tanpa nama rute (mis. pratinjau berita) jatuh ke beranda bahasa tujuan. */
-    $langUrl = fn (string $lang): string => Route::currentRouteName()
-        ? route(
-            Route::currentRouteName(),
-            array_merge(request()->route()->parameters(), ['lang' => $lang], request()->query())
-        )
-        : url($lang);
 @endphp
 <header class="bg-auriga-biru sticky top-0 z-30">
     <div x-data="{ open: false }" class="px-4 py-3 bg-white z-10 {{ $mobileOnly }} block">
@@ -23,7 +13,7 @@
                 <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
               </svg>
 
-              <img src="{{ asset('assets/logo-full.png') }}" alt="Mapbiomas Fire Indonesia" class="sm:h-12 h-10">
+              <img src="{{ asset('images/mapbiomas-fire.png') }}" alt="MapBiomas Indonesia Fire" class="h-9 w-auto">
               <div class="flex gap-2 items-center z-50 text-sm" role="group" aria-label="Pilihan bahasa">
                 <a href="{{ $langUrl('en') }}" hreflang="en"
                    @if(App::getLocale() == 'en') aria-current="true" @endif
@@ -52,72 +42,34 @@
             </button>
 
             <div class="mt-16 space-y-3">
-                <div class=" px-4">
-                    <a href="{{ route('index', [app()->getLocale()]) }}"   class="mb-4 px-4 inline-block  leading-5 text-white  font-semibold ">home<a>
+                <div class="px-4">
+                    <a href="{{ route('index', app()->getLocale()) }}" class="mb-4 px-4 inline-block leading-5 text-white font-semibold">{{ __('home') }}</a>
                     <p class="border-b border-gray-300"></p>
                 </div>
-                <div class=" px-4">
-                    <a href="{{ route('about', [app()->getLocale()]) }}"  class="mb-4 px-4 inline-block  leading-5 text-white  font-semibold ">about<a>
-                    <p class="border-b border-gray-300"></p>
-                </div>
-                <div class=" px-4">
-                    <a href="{{ route('faq', [app()->getLocale()]) }}"  class="mb-4 px-4 inline-block leading-5 text-white font-semibold ">FAQ<a>
-                    <p class="border-b border-gray-300"></p>
-                </div>
-                <div class=" px-4" x-data="{open1: false}">
-                    <div class="flex items-center   px-4 mb-2" @click=" open1 =! open1">
-                        <a class=" text-base leading-5 text-white font-semibold ">map & data </a>
-                        <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': open1, 'rotate-0': !open1}"  class="w-6 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="bg-white px-4 py-3 mb-4 flex flex-col space-y-2 rounded" x-show="open1" style="display: none !important;">
-                        <a href="{{ route('termsofuse', [app()->getLocale()]) }}" class="text-sm mr-6">terms of use</a>
-                        <a href="https://plataforma.mapbiomas.org/fire/fire_annual?t[regionKey]=indonesia" class="text-sm mr-6">platform/map</a>
-                    </div>
-                    <p class="border-b border-gray-300"></p>
-                </div>
-                <div class=" px-4" x-data="{open1: false}">
-                    <div class="flex items-center   px-4 mb-2" @click=" open1 =! open1">
-                        <a class=" text-base leading-5 text-white font-semibold ">methodology </a>
-                        <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': open1, 'rotate-0': !open1}"  class="w-6 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="bg-white px-4 py-3 mb-4 flex flex-col space-y-2 rounded" x-show="open1" style="display: none !important;">
-
-                        <a href="{{ route('atbd', ['lang' => app()->getLocale(), 'cat' => 'monthly']) }}" class="text-sm mr-6">ATBD Monthly</a>
-                        <a href="{{ route('atbd', ['lang' => app()->getLocale(), 'cat' => 'annual']) }}" class="text-sm mr-6">ATBD Annual</a>
-                        <a href="{{ route('refrencemap', [app()->getLocale()]) }}" class="text-sm mr-6">reference map</a>
-                    </div>
-                    <p class="border-b border-gray-300"></p>
-                </div>
-                <div class=" px-4">
-                    <a href="{{ route('newsnevent', [app()->getLocale()]) }}"  class="mb-4 px-4 inline-block  leading-5 text-white  font-semibold ">news & event<a>
-                    <p class="border-b border-gray-300"></p>
-                </div>
-
-
-                <div class=" px-4" x-data="{open1: false}">
-                    <div class="flex items-center   px-4 mb-2" @click=" open1 =! open1">
-                        <a class=" text-base leading-5 text-white font-semibold ">downloads </a>
-                        <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': open1, 'rotate-0': !open1}"  class="w-6 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="bg-white px-4 py-3 mb-4 flex flex-col space-y-2 rounded" x-show="open1" style="display: none !important;">
-
-                        <a href="{{ route('downloads', [app()->getLocale()]) }}" class="text-sm mr-6">collection map</a>
-                        <a href="{{ route('infographics', [app()->getLocale()]) }}" class="text-sm mr-6">infographics</a>
-                        <a href="{{ route('factsheet', [app()->getLocale()]) }}" class="text-sm mr-6">fact sheet</a>
-                    </div>
-                    <p class="border-b border-gray-300"></p>
-                </div>
-
-
-
-
-
+                @foreach ($nav as $item)
+                    @if (isset($item['children']))
+                        <div class="px-4" x-data="{ sub: false }">
+                            <button type="button" class="flex items-center px-4 mb-2 focus:outline-none"
+                                    x-on:click="sub = !sub" :aria-expanded="sub.toString()">
+                                <span class="text-base leading-5 text-white font-semibold">{{ $item['label'] }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': sub, 'rotate-0': !sub}" class="w-6 text-gray-300 transition-transform duration-200" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <div class="bg-white px-4 py-3 mb-4 flex flex-col space-y-2 rounded" x-show="sub" x-cloak style="display: none !important;">
+                                @foreach ($item['children'] as $child)
+                                    <a href="{{ $child['href'] }}" class="text-sm mr-6">{{ $child['label'] }}</a>
+                                @endforeach
+                            </div>
+                            <p class="border-b border-gray-300"></p>
+                        </div>
+                    @else
+                        <div class="px-4">
+                            <a href="{{ $item['href'] }}" class="mb-4 px-4 inline-block leading-5 text-white font-semibold">{{ $item['label'] }}</a>
+                            <p class="border-b border-gray-300"></p>
+                        </div>
+                    @endif
+                @endforeach
             </div>
         </div>
     </div>

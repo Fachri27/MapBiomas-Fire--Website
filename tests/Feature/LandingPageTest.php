@@ -50,6 +50,20 @@ class LandingPageTest extends TestCase
         ], $ubah));
     }
 
+    /**
+     * Kartu landing menampilkan placeholder bila berkas fotonya tidak ada,
+     * jadi uji yang menyangkut gambar harus benar-benar membuat berkasnya.
+     */
+    private function siapkanFoto(string $nama): void
+    {
+        $dir = public_path('storage/files/photos');
+        if (! is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+        file_put_contents($dir.'/'.$nama, '');
+        $this->beforeApplicationDestroyed(fn () => @unlink($dir.'/'.$nama));
+    }
+
     // ── Rute dan lokal ────────────────────────────────────────────────────
 
     public function test_akar_dialihkan_ke_bahasa_inggris(): void
@@ -245,8 +259,54 @@ class LandingPageTest extends TestCase
     {
         $this->get('/id')->assertDontSee('Ketuk untuk memperbesar');
 
+        $this->siapkanFoto('info-id.jpg');
         $this->terbitkanInfografis();
         $this->get('/id')->assertSee('Ketuk untuk memperbesar');
+    }
+
+    // ── Placeholder saat data tidak lengkap ───────────────────────────────
+
+    public function test_kabar_tanpa_berkas_foto_memakai_placeholder(): void
+    {
+        $this->terbitkanBerita(['img' => 'hilang.jpg']);
+
+        $this->get('/id')
+            ->assertSee('Gambar belum tersedia')
+            ->assertDontSee('storage/files/photos/hilang.jpg', false);
+    }
+
+    public function test_kabar_dengan_berkas_foto_menampilkan_gambarnya(): void
+    {
+        $this->siapkanFoto('ada.jpg');
+        $this->terbitkanBerita(['img' => 'ada.jpg']);
+
+        $this->get('/id')
+            ->assertSee('storage/files/photos/ada.jpg', false)
+            ->assertDontSee('Gambar belum tersedia');
+    }
+
+    public function test_kabar_tanpa_teks_inggris_memakai_penggantinya(): void
+    {
+        // titleEN dan descriptionEN nullable, jadi hanya /en yang bisa kosong.
+        $this->terbitkanBerita(['titleEN' => null, 'descriptionEN' => null]);
+
+        $this->get('/en')
+            ->assertOk()
+            ->assertSee('Untitled')
+            ->assertSee('No summary yet.');
+    }
+
+    public function test_infografis_tanpa_berkas_foto_tetap_menampilkan_keterangan(): void
+    {
+        $this->terbitkanInfografis(['imgID' => 'hilang.jpg']);
+
+        $this->get('/id')
+            ->assertSee('Gambar belum tersedia')
+            ->assertSee('Infografis uji')
+            ->assertSee('Keterangan infografis.')
+            // Tidak ada yang bisa diperbesar, jadi pemicu zoom ikut hilang.
+            ->assertDontSee('Ketuk untuk memperbesar')
+            ->assertDontSee('Belum ada infografis terbit.');
     }
 
     // ── Footer ────────────────────────────────────────────────────────────

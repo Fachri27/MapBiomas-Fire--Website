@@ -1,75 +1,103 @@
-{{-- lang switch --}}
+{{-- Navbar layar besar. Satu berkas untuk semua halaman publik; $nav dan
+     $langUrl datang dari View::composer di AppServiceProvider.
+
+     $overlay = true dipakai landing: header mengambang di atas foto hero dan
+     baru memakai latar putih setelah halaman digulir. Halaman dalam memakai
+     varian padat, dibungkus `sticky` oleh halamannya masing-masing. --}}
 @php
-    /* Rute tanpa nama (mis. pratinjau berita dari CMS) tidak dapat dibangun
-       ulang via route(); arahkan saja ke beranda bahasa tujuan. */
-    $langUrl = fn (string $lang): string => Route::currentRouteName()
-        ? route(Route::currentRouteName(), $lang)
-        : url($lang);
+    $overlay = $overlay ?? false;
+    // Landing mewariskan dua kelas ini lewat @include; halaman lain memakai
+    // lebar bakunya.
+    $shell = $shell ?? 'mx-auto w-[90%] max-w-[1520px]';
+    $frame = $frame ?? 'mx-auto w-full max-w-6xl';
 @endphp
-<div class="max-w-6xl mx-auto  sm:block hidden">
-    <div class="flex justify-between px-3">
-        <a></a>
-        <div class="text-red-400 px-12 py-1 bg-red-600 text-sm rounded-b flex space-x-4">
-            <a href="{{ $langUrl('en') }}" class=" @if(App::getLocale() == 'en') text-white @endif  ">English</a>
-            <a href="{{ $langUrl('id') }}" class="@if(App::getLocale() == 'id') text-white @endif">Indonesia</a>
+
+<header
+    @if ($overlay)
+        x-data="{ scrolled: false }"
+        x-on:scroll.window="scrolled = window.scrollY > 40"
+        {{-- Kelas ditulis utuh di kedua cabang supaya terbaca pemindai Tailwind. --}}
+        class="fixed inset-x-0 top-0 z-50 hidden border-b border-ember transition-colors duration-300 lg:block"
+        :class="scrolled ? 'bg-white/[0.92] backdrop-blur' : 'bg-transparent'"
+    @else
+        class="hidden border-b border-ember bg-white lg:block"
+    @endif
+>
+    <div class="{{ $frame }}">
+
+        {{-- Pengalih bahasa: tab yang menggantung dari tepi atas, sejajar tepi
+             kanan konten. --}}
+        <div class="{{ $shell }} flex justify-end">
+            <div class="flex items-center gap-5 rounded-b bg-ember px-9 py-1 font-display text-sm leading-6"
+                 role="group" aria-label="{{ __('Pilihan bahasa') }}">
+                <a href="{{ $langUrl('en') }}" hreflang="en"
+                   @if (app()->getLocale() === 'en') aria-current="true" @endif
+                   class="@if (app()->getLocale() === 'en') font-semibold text-white @else text-white/55 transition-colors hover:text-white @endif">English</a>
+                <a href="{{ $langUrl('id') }}" hreflang="id"
+                   @if (app()->getLocale() === 'id') aria-current="true" @endif
+                   class="@if (app()->getLocale() === 'id') font-semibold text-white @else text-white/55 transition-colors hover:text-white @endif">Indonesia</a>
+            </div>
+        </div>
+
+        <div class="{{ $shell }} flex items-center justify-between gap-6 py-2.5 lg:py-3.5">
+            <a href="{{ route('index', app()->getLocale()) }}" class="relative block shrink-0">
+                @if ($overlay)
+                    {{-- Dua varian logo ditumpuk lalu disilangkan mengikuti header:
+                         saat transparan dipakai versi teks putih agar "MAP" dan
+                         "INDONESIA | FIRE" tetap terbaca di atas foto. --}}
+                    <img src="{{ asset('images/mapbiomas-fire.png') }}"
+                         alt="MapBiomas Indonesia Fire, ke beranda"
+                         class="h-8 w-auto transition-opacity duration-300 lg:h-11"
+                         :class="scrolled ? 'opacity-100' : 'opacity-0'">
+                    <img src="{{ asset('images/mapbiomas-fire-on-dark.png') }}" alt="" aria-hidden="true"
+                         class="absolute inset-0 h-8 w-auto transition-opacity duration-300 lg:h-11"
+                         :class="scrolled ? 'opacity-0' : 'opacity-100'">
+                @else
+                    <img src="{{ asset('images/mapbiomas-fire.png') }}"
+                         alt="MapBiomas Indonesia Fire, ke beranda"
+                         class="h-8 w-auto lg:h-11">
+                @endif
+            </a>
+
+            <nav class="flex items-center gap-4 xl:gap-7" aria-label="{{ __('Navigasi utama') }}">
+                @foreach ($nav as $item)
+                    @if (isset($item['children']))
+                        <div class="relative" x-data="{ sub: false }"
+                             x-on:click.outside="sub = false"
+                             x-on:keydown.escape.window="sub = false">
+                            <button type="button" aria-haspopup="true"
+                                    x-on:click="sub = !sub"
+                                    :aria-expanded="sub.toString()"
+                                    class="flex cursor-pointer items-center gap-1.5 font-display text-[15px] font-semibold text-ember transition-colors hover:text-ember-soft">
+                                {{ $item['label'] }}
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8" fill="none" aria-hidden="true"
+                                     class="h-2 w-3 transition-transform duration-200"
+                                     :class="sub ? 'rotate-180' : ''">
+                                    <path d="M1 1.5 6 6.5 11 1.5" stroke="currentColor" stroke-width="1.6"/>
+                                </svg>
+                            </button>
+                            <div x-show="sub" x-cloak
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 -translate-y-1"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 {{-- tanpa padding: isian hover item menempel ke garis tepi panel --}}
+                                 class="absolute left-0 top-full z-50 mt-3 w-56 border border-ember bg-white">
+                                @foreach ($item['children'] as $child)
+                                    <a href="{{ $child['href'] }}" x-on:click="sub = false"
+                                       class="block px-5 py-2.5 font-display text-sm font-semibold text-ember transition-colors hover:bg-ember hover:text-white">
+                                        {{ $child['label'] }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ $item['href'] }}"
+                           class="font-display text-[15px] font-semibold text-ember transition-colors hover:text-ember-soft">
+                            {{ $item['label'] }}
+                        </a>
+                    @endif
+                @endforeach
+            </nav>
         </div>
     </div>
-</div>
-
-<!-- nav -->
-<div class="max-w-6xl mx-auto px-4 sm:flex hidden sm:justify-between justify-center items-center py-2 mt-4 ">
-    <a href="{{ route('index', [app()->getLocale()]) }}">
-        <img src="{{ asset('assets/logo-full.png') }}" alt="Mapbiomas Fire Indonesia" class="sm:h-12 h-10">
-    </a>
-    <div class="sm:flex hidden gap-10 items-center">
-        <a href="{{ route('about', [app()->getLocale()]) }}" class="text-red-600">about</a>
-        <a href="{{ route('faq', [app()->getLocale()]) }}" class="text-red-600">FAQ</a>
-
-        <!-- map & data dropdown -->
-        <div class="flex-col flex" x-data="{ pagesMap: false }">
-            <a @click="pagesMap = !pagesMap" @click.away="pagesMap = false" class="text-red-600 cursor-pointer inline-flex items-center">
-                map & data
-                <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': pagesMap, 'rotate-0': !pagesMap}" class="w-4 ml-1 -mb-1 transition-transform duration-200 transform" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </a>
-            <div class="absolute mt-8 z-20 bg-white px-2 py-2 flex flex-col space-y-2 w-52 border-red-600 border-b" x-show="pagesMap" x-cloak>
-                <a href="{{ route('termsofuse', [app()->getLocale()]) }}" class="text-sm mr-6">terms of use</a>
-                <a href="https://plataforma.mapbiomas.org/fire/fire_annual?t[regionKey]=indonesia" class="text-sm mr-6">platform/map</a>
-            </div>
-        </div>
-
-        <!-- methodology dropdown -->
-        <div class="flex-col flex" x-data="{ pagesMethodology: false }">
-            <a @click="pagesMethodology = !pagesMethodology" @click.away="pagesMethodology = false" class="text-red-600 cursor-pointer inline-flex items-center">
-                methodology
-                <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': pagesMethodology, 'rotate-0': !pagesMethodology}" class="w-4 ml-1 -mb-1 transition-transform duration-200 transform" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </a>
-            <div class="absolute mt-8 z-20 bg-white px-2 py-2 flex flex-col space-y-2 w-52 border-red-600 border-b" x-show="pagesMethodology" x-cloak>
-                <a href="{{ route('atbd', ['lang' => app()->getLocale(), 'cat' => 'monthly']) }}" class="text-sm mr-6">ATBD Monthly</a>
-                <a href="{{ route('atbd', ['lang' => app()->getLocale(), 'cat' => 'annual']) }}" class="text-sm mr-6">ATBD Annual</a>
-                <a href="{{ route('refrencemap', [app()->getLocale()]) }}" class="text-sm mr-6">reference map</a>
-            </div>
-        </div>
-
-        <a href="{{ route('newsnevent', [app()->getLocale()]) }}" class="text-red-600 cursor-pointer">news & event</a>
-
-        <!-- methodology dropdown -->
-        <div class="flex-col flex" x-data="{ pagesMethodology: false }">
-            <a @click="pagesMethodology = !pagesMethodology" @click.away="pagesMethodology = false" class="text-red-600 cursor-pointer inline-flex items-center">
-                downloads
-                <svg xmlns="http://www.w3.org/2000/svg" :class="{'rotate-180': pagesMethodology, 'rotate-0': !pagesMethodology}" class="w-4 ml-1 -mb-1 transition-transform duration-200 transform" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </a>
-            <div class="absolute mt-8 z-20 bg-white px-2 py-2 flex flex-col space-y-2 w-52 border-red-600 border-b" x-show="pagesMethodology" x-cloak>
-                <a href="{{ route('downloads', [app()->getLocale()]) }}" class="text-sm mr-6">collection map</a>
-                <a href="{{ route('infographics', [app()->getLocale()]) }}" class="text-sm mr-6">infographics</a>
-                <a href="{{ route('factsheet', [app()->getLocale()]) }}" class="text-sm mr-6">fact sheet</a>
-            </div>
-        </div>
-
-    </div>
-</div>
+</header>

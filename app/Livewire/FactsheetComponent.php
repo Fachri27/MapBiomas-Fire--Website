@@ -4,9 +4,12 @@ namespace App\Livewire;
 
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class FactsheetComponent extends Component
 {
+    use WithPagination;
+
     public $deleteName, $deleteID, $deleter;
 
     public function closeDelete(){

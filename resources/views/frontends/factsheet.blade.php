@@ -21,27 +21,29 @@
 
     <div class="sm:px-0 px-4">
         <div class="max-w-3xl mx-auto bg-white relative mt-3 z-20 rounded sm:px-6 px-4 py-10 border-b border-red-600 min-h-[40vh]">
-            <a class="text-xl font-semibold ">Fact Sheet</a>
+            <a class="text-xl font-semibold ">Factsheet</a>
 
             @include('partials.categoryTabs', [
                 'route' => 'factsheet',
                 'active' => $category ?? 'monthly',
-                'label' => __('Fact sheet category'),
+                'label' => __('Factsheet category'),
             ])
 
             {{-- Hanya kalimat unduhnya. Judul tetap disimpan dan tampil di CMS
                  sebagai penanda antar entri, tapi tidak dimunculkan di sini. --}}
             <div class="divide-y divide-gray-200">
                 @forelse ($sheets as $sheet)
+                    {{-- PDF hasil unggahan CMS menang atas kolom link. --}}
+                    @php $href = $sheet->file ? asset('storage/files/factsheet/'.$sheet->file) : $sheet->link; @endphp
                     <div class="py-6 first:pt-0 last:pb-0">
                         <p class="leading-relaxed sm:text-base text-sm">
                             {{ $sheet->description }}
-                            [<a href="{{ $sheet->link }}" target="_blank" rel="noopener"
+                            [<a href="{{ $href }}" target="_blank" rel="noopener"
                                 class="text-red-600 underline">{{ __('Link') }}</a>].
                         </p>
                     </div>
                 @empty
-                    <p class="py-6 text-sm text-gray-500">{{ __('Belum ada fact sheet terbit.') }}</p>
+                    <p class="py-6 text-sm text-gray-500">{{ __('Belum ada factsheet terbit.') }}</p>
                 @endforelse
             </div>
         </div>
