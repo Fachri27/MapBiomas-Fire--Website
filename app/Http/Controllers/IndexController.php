@@ -52,10 +52,11 @@ class IndexController extends Controller
 
     public function getNews()
     {
+        // Kartu kabar menampilkan konten terbaru apa pun kategorinya
+        // (news/event), selama sudah terbit dan tanggalnya terlewat.
         return DB::table('news')
             ->selectRaw($this->selectNews())
             ->where('publishdate', '<', Carbon::now('Asia/Jakarta'))
-            ->where('category', 'news')
             ->where('status', 1)
             ->orderBy('publishdate', 'desc')
             ->take(2)
