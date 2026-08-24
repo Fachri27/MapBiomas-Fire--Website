@@ -18,12 +18,27 @@
     <div class="mt-4 flex gap-2 flex-wrap justify-between ">
         @foreach ($data as $item)
             <div class="sm:w-[49%] w-full mt-6">
-                <a href="{{ route('detailnews', [app()->getLocale(), $item->id, $item->slug]) }}" class="block bg-white rounded-lg  overflow-hidden ">
-                    <img src="{{ asset('storage/files/photos/'.$item->img) }}" alt="{{ $item->title }}" class="w-full h-48 object-cover mb-2">
-                    <a class="text-sm  text-gray-500 font-light">{{$item->category}}</a>
-                    <div class="mt-1">
-                        <a href="{{ route('detailnews', [app()->getLocale(), $item->id, $item->slug]) }}" class="text-lg font-semibold">{{ $item->title }}</a>
-                        <p class="text-sm text-gray-600 mt-2 font-light">{{ strip_tags($item->description) }}</p>
+                {{-- Bentuk kartu mengikuti bagian kabar di landing: gambar, tanggal
+                     merah, judul, lalu deskripsi. Satu <a> saja karena anchor
+                     bersarang bukan markup yang sah. --}}
+                <a href="{{ route('detailnews', [app()->getLocale(), $item->id, $item->slug]) }}"
+                   class="group block">
+                    <div class="overflow-hidden">
+                        <img src="{{ asset('storage/files/photos/'.$item->img) }}" alt="{{ $item->title }}"
+                             loading="lazy"
+                             class="aspect-[476/268] w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,0.84,0.28,1)] group-hover:scale-[1.04]">
+                    </div>
+
+                    <p class="mt-4 font-display text-[14px] font-medium text-ember">
+                        {{ \Illuminate\Support\Carbon::parse($item->publishdate)->locale(app()->getLocale())->translatedFormat('j F Y') }}
+                    </p>
+
+                    <h3 class="mt-1 min-h-[26px] font-display text-[18px] font-semibold leading-[26px] text-neutral-900 transition-colors group-hover:text-ember">
+                        {{ $item->title }}
+                    </h3>
+
+                    <div class="mt-2 min-h-[88px] max-w-[60ch] font-display text-[14px] font-normal leading-[22px] text-neutral-500">
+                        {{ strip_tags($item->description) }}
                     </div>
                 </a>
             </div>

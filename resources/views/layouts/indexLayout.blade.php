@@ -8,6 +8,13 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/favicon.png') }}">
 
     @yield('meta')
+
+    {{-- Poppins hanya dimuat di <head> landing; halaman dalam memakai layout
+         ini, jadi tanpa baris berikut kelas font-display jatuh ke huruf sistem. --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @livewireScripts
@@ -25,7 +32,7 @@
 
 
 </head>
-<body class="font-sans">
+<body class="font-display">
     @yield('content')
 
     @stack('scripts')
