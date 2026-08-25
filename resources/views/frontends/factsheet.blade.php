@@ -29,18 +29,28 @@
                 'label' => __('Factsheet category'),
             ])
 
-            {{-- Hanya kalimat unduhnya. Judul tetap disimpan dan tampil di CMS
-                 sebagai penanda antar entri, tapi tidak dimunculkan di sini. --}}
             <div class="divide-y divide-gray-200">
                 @forelse ($sheets as $sheet)
                     {{-- PDF hasil unggahan CMS menang atas kolom link. --}}
                     @php $href = $sheet->file ? asset('storage/files/factsheet/'.$sheet->file) : $sheet->link; @endphp
-                    <div class="py-6 first:pt-0 last:pb-0">
-                        <p class="leading-relaxed sm:text-base text-sm">
-                            {{ $sheet->description }}
-                            [<a href="{{ $href }}" target="_blank" rel="noopener"
-                                class="text-red-600 underline">{{ __('Link') }}</a>].
-                        </p>
+                    <div class="py-6 first:pt-0 last:pb-0 flex flex-col gap-2">
+                        @if ($sheet->title)
+                            <p class="text-lg font-semibold">{{ $sheet->title }}</p>
+                        @endif
+                        @if ($sheet->description)
+                            <p class="leading-relaxed sm:text-base text-sm">{{ $sheet->description }}</p>
+                        @endif
+                        {{-- Entri warisan bisa tak punya berkas maupun tautan; tanpa
+                             penjagaan ini tombolnya jadi <a href=""> yang memuat ulang halaman. --}}
+                        @if ($href)
+                            <a href="{{ $href }}" target="_blank" rel="noopener"
+                               class="mt-1 inline-flex w-fit items-center gap-2 rounded border border-red-600 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-600 hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                {{ __('Download Factsheet') }}
+                            </a>
+                        @endif
                     </div>
                 @empty
                     <p class="py-6 text-sm text-gray-500">{{ __('Belum ada factsheet terbit.') }}</p>

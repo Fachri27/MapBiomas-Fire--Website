@@ -315,7 +315,7 @@ class CmsSmokeTest extends TestCase
             ->assertSee('?cat=monthly')
             ->assertSee('ANNUAL-DESCRIPTION')
             ->assertSee('href="https://example.com/annual-en.pdf"', false)
-            ->assertDontSee('ANNUAL-TITLE');
+            ->assertSee('ANNUAL-TITLE');
         $this->assertStringNotContainsString('MONTHLY-DESCRIPTION', $annual->getContent());
 
         $monthly = $this->get('/en/factsheet?cat=monthly');
@@ -323,7 +323,7 @@ class CmsSmokeTest extends TestCase
             ->assertSee('MONTHLY-DESCRIPTION')
             ->assertSee('SECOND-MONTHLY-DESCRIPTION')
             ->assertSee('href="https://example.com/monthly-en.pdf"', false)
-            ->assertDontSee('MONTHLY-TITLE');
+            ->assertSee('MONTHLY-TITLE');
 
         $this->get('/en/factsheet?cat=hack')->assertSee('ANNUAL-DESCRIPTION');
 

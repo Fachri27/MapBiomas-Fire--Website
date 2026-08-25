@@ -26,9 +26,9 @@ class FrontendInfographic extends Component
 
     public function getSelectInfographic(){
         if (app()->getLocale() == 'id') {
-            return 'id, titleID as title, imgID as img, slug, period, publishdate';
+            return 'id, titleID as title, imgID as img, period, publishdate';
         } else {
-            return 'id, titleEN as title, imgEN as img, slug, period, publishdate';
+            return 'id, titleEN as title, imgEN as img, period, publishdate';
         }
     }
 

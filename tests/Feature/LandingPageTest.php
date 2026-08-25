@@ -300,8 +300,8 @@ class LandingPageTest extends TestCase
     {
         $this->terbitkanInfografis(['imgID' => 'hilang.jpg']);
 
+        // Kotak abu-abu penggantinya sudah dilepas: yang penting keterangannya tetap ada.
         $this->get('/id')
-            ->assertSee('Gambar belum tersedia')
             ->assertSee('Infografis uji')
             ->assertSee('Keterangan infografis.')
             // Tidak ada yang bisa diperbesar, jadi pemicu zoom ikut hilang.

@@ -131,6 +131,23 @@ class FrontendPagesTest extends TestCase
     }
 
     /**
+     * Entri warisan hasil migrasi tak punya berkas maupun tautan. Tombolnya
+     * harus hilang, bukan terbit sebagai <a href=""> yang memuat ulang halaman.
+     */
+    public function test_factsheet_tanpa_berkas_dan_tautan_tidak_menampilkan_tombol_unduh(): void
+    {
+        $this->isiHalaman('factsheet', [
+            'category' => 'annual',
+            'linkID' => '', 'linkEN' => '',
+            'fileID' => null, 'fileEN' => null,
+        ]);
+
+        $this->get(route('factsheet', 'id'))->assertOk()
+            ->assertDontSee('href=""', false)
+            ->assertDontSee(__('Download Factsheet'));
+    }
+
+    /**
      * Status aktif tidak boleh hanya dibawa warna — aria-current membuatnya
      * terbaca pembaca layar.
      */

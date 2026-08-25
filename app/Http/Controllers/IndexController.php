@@ -34,9 +34,9 @@ class IndexController extends Controller
     public function getSelectInfographic()
     {
         if (app()->getLocale() == 'id') {
-            return 'id, titleID as title, imgID as img, descriptionID as description, slug, period, publishdate';
+            return 'id, titleID as title, imgID as img, descriptionID as description';
         } else {
-            return 'id, titleEN as title, imgEN as img, descriptionEN as description, slug, period, publishdate';
+            return 'id, titleEN as title, imgEN as img, descriptionEN as description';
         }
     }
 

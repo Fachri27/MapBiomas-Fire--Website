@@ -274,69 +274,65 @@
 
         {{-- ─────────────────────────  INFOGRAFIS  ───────────────────────── --}}
         <section id="data" class="bg-white py-[7%] sm:py-[4%]" x-data="{ zoom: false }">
+            @php
+                // Gambar dipakai di dua tempat (kartu dan modal), jadi file_exists
+                // di dalam $adaFoto cukup dijalankan sekali.
+                $gambar = $infographic && $adaFoto($infographic->img);
+                $src = $gambar ? asset('storage/files/photos/'.$infographic->img) : '';
+            @endphp
+
             <div class="{{ $shell }}">
-                @if ($infographic && $adaFoto($infographic->img))
+                {{-- Berkasnya bisa hilang: baris CMS lama, unggahan gagal, atau
+                     storage:link belum jalan. Judul dan keterangan di bawah tetap
+                     tampil, jadi gambarnya cukup dilewati. --}}
+                @if ($gambar)
                     <button type="button" x-on:click="zoom = true"
                             class="{{ $anim }} block w-full cursor-zoom-in" {!! $reveal() !!}
                             aria-label="Perbesar infografis {{ $infographic->title }}">
-                        <img src="{{ asset('storage/files/photos/' . $infographic->img) }}"
-                             alt="{{ $infographic->title }}"
-                             class="w-full" loading="lazy">
+                        <img src="{{ $src }}" alt="{{ $infographic->title }}" class="w-full" loading="lazy">
                         {{-- Angka pada infografis terlalu kecil di layar seluler; kursor
                              zoom tidak terlihat di sana, jadi petunjuknya ditulis. --}}
                         <span class="mt-3 block text-left font-mono text-[10px] uppercase tracking-[0.16em] text-ember lg:hidden">
                             {{ __('Tap to enlarge') }}
                         </span>
                     </button>
-                @elseif ($infographic)
-                    {{-- Barisnya terbit tapi berkas gambarnya hilang; judul dan
-                         keterangan di bawah tetap ditampilkan. --}}
-                    <div class="{{ $anim }} flex aspect-[16/9] w-full items-center justify-center bg-cloud" {!! $reveal() !!}>
-                        <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400">
-                            {{ __('Gambar belum tersedia') }}
-                        </span>
+
+                    {{-- Infografis penuh: teksnya kecil, jadi bisa dibuka besar.
+                         Posisinya fixed, jadi boleh duduk di sini — satu @if untuk
+                         pemicu zoom dan panelnya sekaligus. --}}
+                    <div x-show="zoom" x-cloak x-on:keydown.escape.window="zoom = false"
+                         {{-- .self: hanya klik pada latarnya yang menutup, bukan klik
+                              yang merambat dari elemen lain. --}}
+                         x-on:click.self="zoom = false"
+                         class="fixed inset-0 z-[60] flex overflow-auto bg-black/90 p-4"
+                         role="dialog" aria-modal="true" aria-label="Infografis ukuran penuh">
+                        <button type="button" x-on:click="zoom = false"
+                                class="fixed right-5 top-5 z-10 border border-white/40 bg-black/60 px-4 py-2 font-display text-sm text-white transition-colors hover:bg-white hover:text-black">
+                            {{ __('Tutup') }}
+                        </button>
+                        {{-- Di seluler sengaja lebih lebar dari layar dan digeser, karena
+                             menyusutkannya agar muat justru membuatnya tetap tak terbaca. --}}
+                        <img src="{{ $src }}" alt=""
+                             class="m-auto w-[900px] max-w-none lg:max-h-full lg:w-auto lg:max-w-full lg:object-contain" x-on:click.stop>
                     </div>
-                @else
-                    <p class="{{ $anim }} py-16 text-center font-display text-neutral-400" {!! $reveal() !!}>
-                        {{ __('Belum ada infografis terbit.') }}
-                    </p>
                 @endif
 
                 @if ($infographic)
                     <div class="{{ $anim }} mt-8" {!! $reveal(120) !!}>
-                        {{-- Infografis di sini selalu yang terbaru, jadi bulan datanya
-                             ditulis agar pembaca tahu periode yang sedang dilihat. --}}
-                        <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-ember">
-                            {{ \App\Livewire\FrontendInfographic::monthLabel($infographic->period, $infographic->publishdate) }}
-                        </p>
-                        <p class="mt-2 font-display text-[clamp(1rem,1.15vw,1.3rem)] font-normal text-black">
+                        {{-- Setebal judul kartu kabar. --}}
+                        <p class="font-display text-[clamp(1rem,1.15vw,1.3rem)] font-bold text-neutral-900">
                             {{ $teks($infographic->title, __('Tanpa judul')) }}
                         </p>
                         <div class="mt-3 max-w-[70ch] font-display text-[clamp(0.75rem,0.85vw,0.95rem)] font-light leading-relaxed text-neutral-500">
                             {{ $teks($infographic->description, __('Belum ada ringkasan.')) }}
                         </div>
                     </div>
+                @else
+                    <p class="{{ $anim }} py-16 text-center font-display text-neutral-400" {!! $reveal() !!}>
+                        {{ __('Belum ada infografis terbit.') }}
+                    </p>
                 @endif
             </div>
-
-            {{-- Infografis penuh: teksnya kecil, jadi bisa dibuka besar. --}}
-            @if ($infographic && $adaFoto($infographic->img))
-                <div x-show="zoom" x-cloak x-on:keydown.escape.window="zoom = false"
-                     {{-- .self: hanya klik pada latarnya yang menutup, bukan klik
-                          yang merambat dari elemen lain. --}}
-                     x-on:click.self="zoom = false"
-                     class="fixed inset-0 z-[60] flex overflow-auto bg-black/90 p-4"
-                     role="dialog" aria-modal="true" aria-label="Infografis ukuran penuh">
-                    <button type="button" x-on:click="zoom = false"
-                            class="fixed right-5 top-5 z-10 border border-white/40 bg-black/60 px-4 py-2 font-display text-sm text-white transition-colors hover:bg-white hover:text-black">
-                        {{ __('Tutup') }}
-                    </button>
-                    {{-- Di seluler sengaja lebih lebar dari layar dan digeser, karena
-                         menyusutkannya agar muat justru membuatnya tetap tak terbaca. --}}
-                    <img src="{{ asset('storage/files/photos/' . $infographic->img) }}" alt=""
-                         class="m-auto w-[900px] max-w-none lg:max-h-full lg:w-auto lg:max-w-full lg:object-contain" x-on:click.stop>
-                </div>
-            @endif
         </section>
 
         {{-- ─────────────────────────  MITRA  ───────────────────────── --}}
