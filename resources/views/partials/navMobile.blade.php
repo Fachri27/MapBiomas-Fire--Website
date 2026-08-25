@@ -43,7 +43,7 @@
 
             <div class="mt-16 space-y-3">
                 <div class="px-4">
-                    <a href="{{ route('index', app()->getLocale()) }}" class="mb-4 px-4 inline-block leading-5 text-white font-semibold">{{ __('home') }}</a>
+                    <a href="{{ route('index', app()->getLocale()) }}" class="mb-4 px-4 inline-block leading-5 text-white font-semibold">home</a>
                     <p class="border-b border-gray-300"></p>
                 </div>
                 @foreach ($nav as $item)

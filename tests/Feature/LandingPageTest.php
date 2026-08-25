@@ -84,10 +84,24 @@ class LandingPageTest extends TestCase
         $this->get('/en')->assertSee('<html lang="en"', false);
     }
 
-    public function test_label_menu_diterjemahkan_mengikuti_lokal(): void
+    /**
+     * Label menu sengaja tidak diterjemahkan: tetap berbahasa Inggris di kedua
+     * lokal. Terjemahannya masih ada di lang/id.json, jadi tanpa pagar ini
+     * cukup satu __() yang dipasang kembali untuk mengembalikannya diam-diam.
+     */
+    public function test_label_menu_tetap_inggris_di_kedua_lokal(): void
     {
-        $this->get('/id')->assertSee('peta &amp; data', false)->assertSee('unduhan');
-        $this->get('/en')->assertSee('map &amp; data', false)->assertSee('downloads');
+        foreach (['id', 'en'] as $lang) {
+            $this->get("/$lang")
+                ->assertSee('map &amp; data', false)
+                ->assertSee('news &amp; event', false)
+                ->assertSee('methodology')
+                ->assertSee('downloads')
+                ->assertDontSee('peta &amp; data', false)
+                ->assertDontSee('kabar &amp; acara', false)
+                ->assertDontSee('metodologi')
+                ->assertDontSee('unduhan');
+        }
     }
 
     // ── Navigasi ──────────────────────────────────────────────────────────
