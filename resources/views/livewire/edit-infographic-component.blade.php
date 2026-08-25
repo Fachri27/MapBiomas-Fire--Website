@@ -77,7 +77,7 @@
             <div x-show="tabs==='english'" x-cloak style="display: none !important">
                 <div class="w-full border border-gray-300 dark:border-opacity-20 rounded px-6 py-6 mb-6">
                     <h1 class="text-xl font-semibold  text-newbg-newgray-900 dark:text-gray-300 mb-6">Image </h1>
-                    <div class="flex items-center justify-center px-2 py-2 border border-dashed border-gray-400 rounded" x-data="{ isUploading: false, progress: 0 }" x-on:livewire-upload-start="isUploading = true" x-on:livewire-upload-finish="isUploading = false; progress = 5" x-on:livewire-upload-error="isUploading = false" x-on:livewire-upload-progress="progress = $event.detail.progress">
+                    <div class="flex items-center justify-center px-2 py-2 border border-dashed border-gray-400 rounded" x-data="{ isUploading: false, progress: 0 }" x-on:livewire-upload-start="isUploading = true; progress = 0" x-on:livewire-upload-finish="isUploading = false" x-on:livewire-upload-error="isUploading = false" x-on:livewire-upload-cancel="isUploading = false" x-on:livewire-upload-progress="progress = $event.detail.progress">
                         <label class="cursor-pointer">
                             @if ($uphotoEN)
                                 @if ($photoEN)
@@ -88,9 +88,7 @@
                             @endif
                             <input type='file' class="hidden" wire:model.live='photoEN' accept="image/*" />
                             <p wire:loading.remove wire:target="photoEN" class="text-xs text-center text-gray-400 mt-2">Clik to upload image</p>
-                            <div x-show.transition="isUploading" class="progress progress-sm mt-2 rounded flex justify-center">
-                                <span class="text-xs text-black dark:text-white" x-text="'Uploading ' + progress + '%'"></span>
-                        </div>
+                        @include('partials.uploadProgress')
                         </label>
                     </div>
                 </div>
@@ -111,7 +109,7 @@
             <div x-show="tabs==='indonesia'" x-cloak style="display: none !important">
                 <div class="w-full border border-gray-300 dark:border-opacity-20 rounded px-6 py-6 mb-6">
                     <h1 class="text-xl font-semibold  text-newbg-newgray-900 dark:text-gray-300 mb-6">Image </h1>
-                    <div class="flex items-center justify-center px-2 py-2 border border-dashed border-gray-400 rounded" x-data="{ isUploading: false, progress: 0 }" x-on:livewire-upload-start="isUploading = true" x-on:livewire-upload-finish="isUploading = false; progress = 5" x-on:livewire-upload-error="isUploading = false" x-on:livewire-upload-progress="progress = $event.detail.progress">
+                    <div class="flex items-center justify-center px-2 py-2 border border-dashed border-gray-400 rounded" x-data="{ isUploading: false, progress: 0 }" x-on:livewire-upload-start="isUploading = true; progress = 0" x-on:livewire-upload-finish="isUploading = false" x-on:livewire-upload-error="isUploading = false" x-on:livewire-upload-cancel="isUploading = false" x-on:livewire-upload-progress="progress = $event.detail.progress">
                         <label class="cursor-pointer">
                             @if ($uphotoID)
                                 @if ($photoID)
@@ -122,9 +120,7 @@
                             @endif
                             <input type='file' class="hidden" wire:model.live='photoID' accept="image/*" />
                             <p wire:loading.remove wire:target="photoID" class="text-xs text-center text-gray-400 mt-2">Clik to upload image</p>
-                            <div x-show.transition="isUploading" class="progress progress-sm mt-2 rounded flex justify-center">
-                                <span class="text-xs text-black dark:text-white" x-text="'Uploading ' + progress + '%'"></span>
-                        </div>
+                        @include('partials.uploadProgress')
                         </label>
                     </div>
                 </div>

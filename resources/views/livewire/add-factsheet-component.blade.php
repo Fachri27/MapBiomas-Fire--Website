@@ -62,7 +62,13 @@
                 <input type="url" wire:model='linkEN' placeholder="https://... (pdf / download page)" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border border-gray-300 dark:border-opacity-20 py-2 px-4 focus:outline-none">
             </label>
             <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">PDF file</span>
-            <label class="cursor-pointer block">
+            <label class="cursor-pointer block"
+                   x-data="{ isUploading: false, progress: 0 }"
+                   x-on:livewire-upload-start="isUploading = true; progress = 0"
+                   x-on:livewire-upload-progress="progress = $event.detail.progress"
+                   x-on:livewire-upload-finish="isUploading = false"
+                   x-on:livewire-upload-error="isUploading = false"
+                   x-on:livewire-upload-cancel="isUploading = false">
                 <input type="file" class="hidden" wire:model.live='pdfEN' accept="application/pdf" />
                 <div class="border border-dashed border-gray-300 dark:border-opacity-20 rounded py-6 px-4 text-center">
                     @if ($pdfEN)
@@ -73,8 +79,8 @@
                         </svg>
                     @endif
                     <p wire:loading.remove wire:target="pdfEN" class="text-xs text-center text-gray-400 mt-2">Click to upload PDF (max 50MB)</p>
-                    <p wire:loading wire:target="pdfEN" class="text-xs text-center text-gray-400 mt-2">Uploading...</p>
                 </div>
+                @include('partials.uploadProgress')
             </label>
         </div>
     </div>
@@ -95,7 +101,13 @@
                 <input type="url" wire:model='linkID' placeholder="https://... (pdf / halaman unduh)" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border border-gray-300 dark:border-opacity-20 py-2 px-4 focus:outline-none">
             </label>
             <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">Berkas PDF</span>
-            <label class="cursor-pointer block">
+            <label class="cursor-pointer block"
+                   x-data="{ isUploading: false, progress: 0 }"
+                   x-on:livewire-upload-start="isUploading = true; progress = 0"
+                   x-on:livewire-upload-progress="progress = $event.detail.progress"
+                   x-on:livewire-upload-finish="isUploading = false"
+                   x-on:livewire-upload-error="isUploading = false"
+                   x-on:livewire-upload-cancel="isUploading = false">
                 <input type="file" class="hidden" wire:model.live='pdfID' accept="application/pdf" />
                 <div class="border border-dashed border-gray-300 dark:border-opacity-20 rounded py-6 px-4 text-center">
                     @if ($pdfID)
@@ -106,8 +118,8 @@
                         </svg>
                     @endif
                     <p wire:loading.remove wire:target="pdfID" class="text-xs text-center text-gray-400 mt-2">Klik untuk mengunggah PDF (maks 50MB)</p>
-                    <p wire:loading wire:target="pdfID" class="text-xs text-center text-gray-400 mt-2">Mengunggah...</p>
                 </div>
+                @include('partials.uploadProgress')
             </label>
         </div>
     </div>
