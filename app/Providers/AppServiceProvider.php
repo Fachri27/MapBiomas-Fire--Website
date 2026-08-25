@@ -45,8 +45,8 @@ class AppServiceProvider extends ServiceProvider
                     // membedakan keduanya lewat query 'cat'.
                     'label' => __('methodology'),
                     'children' => [
-                        ['label' => __('ATBD Monthly'), 'href' => route('atbd', ['lang' => $lang, 'cat' => 'monthly'])],
                         ['label' => __('ATBD Annual'), 'href' => route('atbd', ['lang' => $lang, 'cat' => 'annual'])],
+                        ['label' => __('ATBD Monthly'), 'href' => route('atbd', ['lang' => $lang, 'cat' => 'monthly'])],
                         ['label' => __('reference map'), 'href' => route('refrencemap', $lang)],
                     ],
                 ],

@@ -39,7 +39,8 @@ class FactsheetSeeder extends Seeder
                     'descriptionID' => 'Untuk mengunduh factsheet MapBiomas Indonesia koleksi 1, gunakan tautan berikut',
                     'descriptionEN' => 'To download the MapBiomas Indonesia factsheet collection 1, you can use the following',
                     // Placeholder; ganti lewat CMS begitu berkasnya tersedia.
-                    'link' => '#',
+                    'linkID' => '#',
+                    'linkEN' => '#',
                     'created_at' => $now,
                     'updated_at' => $now,
                 ])

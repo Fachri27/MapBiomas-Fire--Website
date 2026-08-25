@@ -21,11 +21,11 @@
 
     <div class="sm:px-0 px-4">
         <div class="max-w-3xl mx-auto bg-white relative mt-3 z-20 rounded sm:px-6 px-4 py-10 border-b border-red-600 min-h-[40vh]">
-            <a class="text-xl font-semibold ">Factsheet</a>
+            <a class="text-xl font-semibold ">{{ __('Factsheet') }}</a>
 
             @include('partials.categoryTabs', [
                 'route' => 'factsheet',
-                'active' => $category ?? 'monthly',
+                'active' => $category ?? 'annual',
                 'label' => __('Factsheet category'),
             ])
 

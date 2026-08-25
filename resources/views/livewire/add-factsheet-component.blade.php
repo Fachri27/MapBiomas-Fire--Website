@@ -21,8 +21,8 @@
     <label class="w-full mb-6 block" >
         <select wire:model='category' class=" bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border  py-2 px-4 focus:outline-none border-gray-300 dark:border-opacity-20">
             <option value="">Category</option>
-            <option value="monthly">Monthly</option>
             <option value="annual">Annual</option>
+            <option value="monthly">Monthly</option>
         </select>
     </label>
 
@@ -56,6 +56,26 @@
                 <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">Description</span>
                 <textarea rows="4" wire:model='descriptionEN' placeholder="Short description (english)" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border border-gray-300 dark:border-opacity-20 py-2 px-4 focus:outline-none"></textarea>
             </label>
+
+            <label class="block mb-4">
+                <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">Link <span class="font-normal text-gray-400">(optional if a PDF is uploaded)</span></span>
+                <input type="url" wire:model='linkEN' placeholder="https://... (pdf / download page)" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border border-gray-300 dark:border-opacity-20 py-2 px-4 focus:outline-none">
+            </label>
+            <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">PDF file</span>
+            <label class="cursor-pointer block">
+                <input type="file" class="hidden" wire:model.live='pdfEN' accept="application/pdf" />
+                <div class="border border-dashed border-gray-300 dark:border-opacity-20 rounded py-6 px-4 text-center">
+                    @if ($pdfEN)
+                        <p class="text-sm text-newgray-900 dark:text-gray-300 break-all">{{ $pdfEN->getClientOriginalName() }}</p>
+                    @else
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    @endif
+                    <p wire:loading.remove wire:target="pdfEN" class="text-xs text-center text-gray-400 mt-2">Click to upload PDF (max 50MB)</p>
+                    <p wire:loading wire:target="pdfEN" class="text-xs text-center text-gray-400 mt-2">Uploading...</p>
+                </div>
+            </label>
         </div>
     </div>
 
@@ -69,29 +89,27 @@
                 <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">Deskripsi</span>
                 <textarea rows="4" wire:model='descriptionID' placeholder="Deskripsi singkat (indonesia)" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border border-gray-300 dark:border-opacity-20 py-2 px-4 focus:outline-none"></textarea>
             </label>
+
+            <label class="block mb-4">
+                <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">Tautan <span class="font-normal text-gray-400">(opsional bila PDF diunggah)</span></span>
+                <input type="url" wire:model='linkID' placeholder="https://... (pdf / halaman unduh)" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border border-gray-300 dark:border-opacity-20 py-2 px-4 focus:outline-none">
+            </label>
+            <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">Berkas PDF</span>
+            <label class="cursor-pointer block">
+                <input type="file" class="hidden" wire:model.live='pdfID' accept="application/pdf" />
+                <div class="border border-dashed border-gray-300 dark:border-opacity-20 rounded py-6 px-4 text-center">
+                    @if ($pdfID)
+                        <p class="text-sm text-newgray-900 dark:text-gray-300 break-all">{{ $pdfID->getClientOriginalName() }}</p>
+                    @else
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    @endif
+                    <p wire:loading.remove wire:target="pdfID" class="text-xs text-center text-gray-400 mt-2">Klik untuk mengunggah PDF (maks 50MB)</p>
+                    <p wire:loading wire:target="pdfID" class="text-xs text-center text-gray-400 mt-2">Mengunggah...</p>
+                </div>
+            </label>
         </div>
     </div>
 
-    <label class="w-full mb-6 block">
-        <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">Link <span class="font-normal text-gray-400">(optional if a PDF is uploaded)</span></span>
-        <input type="url" wire:model='link' placeholder="https://... (pdf / halaman unduh)" class="bg-gray-100 dark:bg-newgray-700 text-newgray-700 dark:text-gray-300 rounded w-full border border-gray-300 dark:border-opacity-20 py-2 px-4 focus:outline-none">
-    </label>
-
-    <div class="w-full border border-gray-300 dark:border-opacity-20 rounded px-6 py-6 mb-6">
-        <span class="block text-sm font-semibold text-newgray-900 dark:text-gray-300 mb-2">PDF file</span>
-        <label class="cursor-pointer block">
-            <input type="file" class="hidden" wire:model.live='pdf' accept="application/pdf" />
-            <div class="border border-dashed border-gray-300 dark:border-opacity-20 rounded py-6 px-4 text-center">
-                @if ($pdf)
-                    <p class="text-sm text-newgray-900 dark:text-gray-300 break-all">{{ $pdf->getClientOriginalName() }}</p>
-                @else
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                @endif
-                <p wire:loading.remove wire:target="pdf" class="text-xs text-center text-gray-400 mt-2">Click to upload PDF (max 50MB)</p>
-                <p wire:loading wire:target="pdf" class="text-xs text-center text-gray-400 mt-2">Uploading...</p>
-            </div>
-        </label>
-    </div>
 </form>

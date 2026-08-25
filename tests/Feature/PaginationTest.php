@@ -32,7 +32,7 @@ class PaginationTest extends TestCase
             $baris = match ($tabel) {
                 'factsheet' => [
                     'category' => 'monthly', 'titleID' => "JUDUL-{$n}", 'titleEN' => "TITLE-{$n}",
-                    'descriptionID' => 'd', 'descriptionEN' => 'd', 'link' => '#',
+                    'descriptionID' => 'd', 'descriptionEN' => 'd', 'linkID' => '#', 'linkEN' => '#',
                 ],
                 'faq' => [
                     'questionID' => "TANYA-{$n}", 'questionEN' => "ASK-{$n}",

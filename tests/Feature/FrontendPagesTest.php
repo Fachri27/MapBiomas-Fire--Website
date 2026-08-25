@@ -31,7 +31,8 @@ class FrontendPagesTest extends TestCase
                 'titleEN' => 'Title in english.',
                 'descriptionID' => 'Deskripsi bahasa Indonesia.',
                 'descriptionEN' => 'Description in english.',
-                'link' => 'https://contoh.id/berkas.pdf',
+                'linkID' => 'https://contoh.id/berkas.pdf',
+                'linkEN' => 'https://example.com/file.pdf',
             ];
         }
 
@@ -110,13 +111,23 @@ class FrontendPagesTest extends TestCase
     }
 
     #[DataProvider('halamanBerkategori')]
-    public function test_kategori_kosong_atau_ngawur_jatuh_ke_bulanan(string $rute, string $tabel, string $isiKey): void
+    public function test_kategori_kosong_atau_ngawur_jatuh_ke_tahunan(string $rute, string $tabel, string $isiKey): void
     {
-        $this->isiHalaman($tabel, ['category' => 'monthly', $isiKey => 'Isi bulanan.']);
+        $this->isiHalaman($tabel, ['category' => 'annual', $isiKey => 'Isi tahunan.']);
 
-        $this->get(route($rute, 'id'))->assertOk()->assertSee('Isi bulanan.');
+        $this->get(route($rute, 'id'))->assertOk()->assertSee('Isi tahunan.');
         $this->get(route($rute, ['lang' => 'id', 'cat' => 'sembarang']))
-            ->assertOk()->assertSee('Isi bulanan.');
+            ->assertOk()->assertSee('Isi tahunan.');
+    }
+
+    public function test_factsheet_menampilkan_deskripsi_sesuai_bahasa(): void
+    {
+        $this->isiHalaman('factsheet', ['category' => 'annual']);
+
+        $this->get(route('factsheet', 'id'))->assertOk()
+            ->assertSee('Deskripsi bahasa Indonesia.')->assertDontSee('Description in english.');
+        $this->get(route('factsheet', 'en'))->assertOk()
+            ->assertSee('Description in english.')->assertDontSee('Deskripsi bahasa Indonesia.');
     }
 
     /**

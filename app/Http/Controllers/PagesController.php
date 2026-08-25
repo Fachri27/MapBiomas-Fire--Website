@@ -66,7 +66,7 @@ class PagesController extends Controller
                 ->first();
     }
 
-    public function getatbd($category = 'monthly'){
+    public function getatbd($category = 'annual'){
         return DB::table('pageatbd')
                 ->selectRaw($this->getSelect())
                 ->where('category', $category)
@@ -110,7 +110,7 @@ class PagesController extends Controller
 
     public function atbd(Request $request){
         $cat = $request->query('cat');
-        $category = in_array($cat, ['monthly', 'annual']) ? $cat : 'monthly';
+        $category = in_array($cat, ['annual', 'monthly']) ? $cat : 'annual';
 
         $title = 'MapBiomas Fire - ATBD '.$category;
         $data = $this->getatbd($category);

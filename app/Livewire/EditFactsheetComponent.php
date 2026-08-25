@@ -12,8 +12,9 @@ class EditFactsheetComponent extends Component
 {
     use WithFileUploads;
 
-    public $category, $titleEN, $titleID, $descriptionEN, $descriptionID, $link, $idFactsheet;
-    public $pdf, $updf;
+    public $category, $titleEN, $titleID, $descriptionEN, $descriptionID, $idFactsheet;
+    // Unduhan ikut bahasa: tiap edisi punya PDF/tautannya sendiri.
+    public $linkID, $linkEN, $pdfID, $pdfEN, $updfID, $updfEN;
 
     public function mount($id){
         $data = DB::table('factsheet')->where('id', $id)->first();
@@ -22,30 +23,39 @@ class EditFactsheetComponent extends Component
         $this->titleEN = $data->titleEN;
         $this->descriptionID = $data->descriptionID;
         $this->descriptionEN = $data->descriptionEN;
-        $this->link = $data->link;
-        $this->updf = $data->file;
+        $this->linkID = $data->linkID;
+        $this->linkEN = $data->linkEN;
+        $this->updfID = $data->fileID;
+        $this->updfEN = $data->fileEN;
         $this->idFactsheet = $id;
     }
 
-    public function updatedPdf($file){
-        if (! $this->pdfValid($file)) {
-            $this->reset('pdf');
+    public function updated($name, $value){
+        if (in_array($name, ['pdfID', 'pdfEN']) && ! $this->pdfValid($value)) {
+            $this->reset($name);
         }
     }
 
     public function storeAksi(){
         if($this->manualValidation()){
+            // Hitung keduanya dulu, baru simpan: berkas lama masih dibutuhkan
+            // sebagai pembanding saat memutuskan penghapusan.
+            $fileID = $this->handlePdfUpload($this->pdfID, $this->updfID, $this->updfEN);
+            $fileEN = $this->handlePdfUpload($this->pdfEN, $this->updfEN, $this->updfID);
+
             DB::table('factsheet')->where('id', $this->idFactsheet)->update([
                 'category' => $this->category,
                 'titleID' => $this->titleID,
                 'titleEN' => $this->titleEN,
                 'descriptionID' => $this->descriptionID,
                 'descriptionEN' => $this->descriptionEN,
-                'link' => $this->link ?? '',
-                'file' => $this->updf = $this->handlePdfUpload(),
+                'linkID' => $this->linkID ?? '',
+                'linkEN' => $this->linkEN ?? '',
+                'fileID' => $this->updfID = $fileID,
+                'fileEN' => $this->updfEN = $fileEN,
                 'updated_at' => now(),
             ]);
-            $this->reset('pdf');
+            $this->reset('pdfID', 'pdfEN');
             Toaster::success('Succesfully update factsheet');
         }
     }
@@ -55,18 +65,23 @@ class EditFactsheetComponent extends Component
         return view('livewire.edit-factsheet-component');
     }
 
-    protected function handlePdfUpload(){
-        if (! $this->pdf) {
-            return $this->updf;
+    /**
+     * $lama  berkas bahasa ini sekarang
+     * $lain  berkas bahasa satunya; entri warisan memakai berkas yang sama di
+     *        kedua bahasa, jadi jangan hapus selama sisi lain masih memakainya.
+     */
+    protected function handlePdfUpload($pdf, $lama, $lain){
+        if (! $pdf) {
+            return $lama;
         }
 
         // Tulis dulu, hapus belakangan: kalau store() gagal, berkas lama tetap ada.
         // Disk eksplisit: disk sementara Livewire berbeda saat pengujian.
-        $this->pdf->store('public/files/factsheet', 'local');
-        $new = $this->pdf->hashName();
+        $pdf->store('public/files/factsheet', 'local');
+        $new = $pdf->hashName();
 
-        if ($this->updf && $this->updf !== $new) {
-            Storage::delete('public/files/factsheet/'.$this->updf);
+        if ($lama && $lama !== $new && $lama !== $lain) {
+            Storage::delete('public/files/factsheet/'.$lama);
         }
 
         return $new;
@@ -101,10 +116,15 @@ class EditFactsheetComponent extends Component
         }elseif($this->descriptionEN == '' ){
             Toaster::error('Description english is required!');
             return;
-        }elseif($this->link == '' && ! $this->pdf && ! $this->updf ){
-            Toaster::error('Upload a PDF or fill the link!');
+        }elseif($this->linkID == '' && ! $this->pdfID && ! $this->updfID ){
+            Toaster::error('Upload a PDF or fill the link for indonesia!');
             return;
-        }elseif($this->pdf && ! $this->pdfValid($this->pdf) ){
+        }elseif($this->linkEN == '' && ! $this->pdfEN && ! $this->updfEN ){
+            Toaster::error('Upload a PDF or fill the link for english!');
+            return;
+        }elseif($this->pdfID && ! $this->pdfValid($this->pdfID) ){
+            return;
+        }elseif($this->pdfEN && ! $this->pdfValid($this->pdfEN) ){
             return;
         }
         return true;

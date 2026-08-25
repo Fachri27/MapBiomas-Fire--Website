@@ -6,10 +6,10 @@
 
      $route  nama rute tujuan
      $active kunci kategori yang sedang tampil
-     $tabs   opsional, default monthly/annual
+     $tabs   opsional, default annual/monthly
      $label  opsional, aria-label untuk navigasinya --}}
 @php
-    $tabs = $tabs ?? ['monthly' => __('Monthly'), 'annual' => __('Annual')];
+    $tabs = $tabs ?? ['annual' => __('Annual'), 'monthly' => __('Monthly')];
 @endphp
 <nav class="mb-6 mt-4 flex gap-8 border-b border-gray-200 text-sm"
      aria-label="{{ $label ?? __('Category') }}">

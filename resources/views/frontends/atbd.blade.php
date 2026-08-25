@@ -24,7 +24,7 @@
 
             @include('partials.categoryTabs', [
                 'route' => 'atbd',
-                'active' => $category ?? 'monthly',
+                'active' => $category ?? 'annual',
                 'label' => __('ATBD category'),
             ])
 

@@ -26,7 +26,8 @@ class CmsSmokeTest extends TestCase
             'titleEN' => 'MONTHLY-TITLE',
             'descriptionID' => 'DESKRIPSI-BULANAN',
             'descriptionEN' => 'MONTHLY-DESCRIPTION',
-            'link' => 'https://example.com/monthly.pdf',
+            'linkID' => 'https://example.com/monthly.pdf',
+            'linkEN' => 'https://example.com/monthly-en.pdf',
             'created_at' => now(),
             'updated_at' => now(),
         ], $ubah));
@@ -68,14 +69,16 @@ class CmsSmokeTest extends TestCase
             ->set('titleEN', 'SAVED-EN')
             ->set('descriptionID', 'desc-id')
             ->set('descriptionEN', 'desc-en')
-            ->set('link', 'https://example.com/new.pdf')
+            ->set('linkID', 'https://example.com/new-id.pdf')
+            ->set('linkEN', 'https://example.com/new-en.pdf')
             ->call('storeAksi')
             ->assertRedirect('/cms/listfactsheet');
 
         $row = DB::table('factsheet')->where('titleEN', 'SAVED-EN')->first();
         $this->assertNotNull($row);
         $this->assertSame('annual', $row->category);
-        $this->assertSame('https://example.com/new.pdf', $row->link);
+        $this->assertSame('https://example.com/new-id.pdf', $row->linkID);
+        $this->assertSame('https://example.com/new-en.pdf', $row->linkEN);
     }
 
     /** @test */
@@ -84,7 +87,8 @@ class CmsSmokeTest extends TestCase
         Livewire::test(AddFactsheetComponent::class)
             ->set('titleID', 'x')->set('titleEN', 'y')
             ->set('descriptionID', 'a')->set('descriptionEN', 'b')
-            ->set('link', 'https://example.com/x.pdf')
+            ->set('linkID', 'https://example.com/x.pdf')
+            ->set('linkEN', 'https://example.com/x.pdf')
             ->call('storeAksi');
 
         // Kategori kosong → tidak tersimpan.
@@ -104,15 +108,21 @@ class CmsSmokeTest extends TestCase
             ->set('descriptionID', 'desc-id')
             ->set('descriptionEN', 'desc-en')
             // Link sengaja kosong: PDF saja sudah cukup.
-            ->set('pdf', UploadedFile::fake()->create('factsheet.pdf', 200, 'application/pdf'))
+            ->set('pdfID', UploadedFile::fake()->create('factsheet-id.pdf', 200, 'application/pdf'))
+            ->set('pdfEN', UploadedFile::fake()->create('factsheet-en.pdf', 200, 'application/pdf'))
             ->call('storeAksi')
             ->assertRedirect('/cms/listfactsheet');
 
         $row = DB::table('factsheet')->where('titleEN', 'PDF-EN')->first();
         $this->assertNotNull($row);
-        $this->assertNotEmpty($row->file);
-        $this->assertSame('', $row->link);
-        Storage::disk('local')->assertExists('public/files/factsheet/'.$row->file);
+        $this->assertNotEmpty($row->fileID);
+        $this->assertNotEmpty($row->fileEN);
+        // Dua unggahan berbeda: pembaca EN tidak ikut menerima PDF Indonesia.
+        $this->assertNotSame($row->fileID, $row->fileEN);
+        $this->assertSame('', $row->linkID);
+        $this->assertSame('', $row->linkEN);
+        Storage::disk('local')->assertExists('public/files/factsheet/'.$row->fileID);
+        Storage::disk('local')->assertExists('public/files/factsheet/'.$row->fileEN);
     }
 
     /** @test */
@@ -121,8 +131,8 @@ class CmsSmokeTest extends TestCase
         Storage::fake('local');
 
         Livewire::test(AddFactsheetComponent::class)
-            ->set('pdf', UploadedFile::fake()->image('bukan.jpg'))
-            ->assertSet('pdf', null);
+            ->set('pdfID', UploadedFile::fake()->image('bukan.jpg'))
+            ->assertSet('pdfID', null);
     }
 
     /** @test */
@@ -131,13 +141,13 @@ class CmsSmokeTest extends TestCase
         Storage::fake('local');
 
         Livewire::test(AddFactsheetComponent::class)
-            ->set('pdf', UploadedFile::fake()->create('gede.pdf', 51201, 'application/pdf'))
-            ->assertSet('pdf', null);
+            ->set('pdfEN', UploadedFile::fake()->create('gede.pdf', 51201, 'application/pdf'))
+            ->assertSet('pdfEN', null);
 
         // Tepat di batas masih diterima.
         Livewire::test(AddFactsheetComponent::class)
-            ->set('pdf', UploadedFile::fake()->create('pas.pdf', 51200, 'application/pdf'))
-            ->assertNotSet('pdf', null);
+            ->set('pdfEN', UploadedFile::fake()->create('pas.pdf', 51200, 'application/pdf'))
+            ->assertNotSet('pdfEN', null);
     }
 
     /** @test */
@@ -159,10 +169,36 @@ class CmsSmokeTest extends TestCase
         Livewire::test(EditFactsheetComponent::class, ['id' => $id])
             ->assertSet('titleEN', 'MONTHLY-TITLE')
             ->assertSet('category', 'monthly')
-            ->set('link', 'https://example.com/edited.pdf')
+            ->set('linkEN', 'https://example.com/edited.pdf')
             ->call('storeAksi');
 
-        $this->assertSame('https://example.com/edited.pdf', DB::table('factsheet')->find($id)->link);
+        $row = DB::table('factsheet')->find($id);
+        $this->assertSame('https://example.com/edited.pdf', $row->linkEN);
+        // Sisi Indonesia tidak ikut berubah.
+        $this->assertSame('https://example.com/monthly.pdf', $row->linkID);
+    }
+
+    /**
+     * Entri warisan memakai satu berkas untuk kedua bahasa. Mengganti PDF di
+     * satu sisi tidak boleh menghapus berkas yang masih dipakai sisi lain.
+     *
+     * @test
+     */
+    public function cms_factsheet_edit_keeps_pdf_shared_with_other_language(): void
+    {
+        Storage::fake('local');
+        Storage::disk('local')->put('public/files/factsheet/warisan.pdf', 'pdf');
+
+        $id = $this->terbitkanFactsheet(['fileID' => 'warisan.pdf', 'fileEN' => 'warisan.pdf']);
+
+        Livewire::test(EditFactsheetComponent::class, ['id' => $id])
+            ->set('pdfID', UploadedFile::fake()->create('baru.pdf', 10, 'application/pdf'))
+            ->call('storeAksi');
+
+        $row = DB::table('factsheet')->find($id);
+        $this->assertNotSame('warisan.pdf', $row->fileID);
+        $this->assertSame('warisan.pdf', $row->fileEN);
+        Storage::disk('local')->assertExists('public/files/factsheet/warisan.pdf');
     }
 
     /** @test */
@@ -268,26 +304,33 @@ class CmsSmokeTest extends TestCase
             'titleEN' => 'ANNUAL-TITLE',
             'descriptionID' => 'DESKRIPSI-TAHUNAN',
             'descriptionEN' => 'ANNUAL-DESCRIPTION',
-            'link' => 'https://example.com/annual.pdf',
+            'linkID' => 'https://example.com/annual-id.pdf',
+            'linkEN' => 'https://example.com/annual-en.pdf',
         ]);
 
-        $monthly = $this->get('/en/factsheet');
-        $monthly->assertOk()
-            ->assertSee('?cat=monthly')
-            ->assertSee('?cat=annual')
-            ->assertSee('MONTHLY-DESCRIPTION')
-            ->assertSee('SECOND-MONTHLY-DESCRIPTION')
-            ->assertSee('href="https://example.com/monthly.pdf"', false)
-            ->assertDontSee('MONTHLY-TITLE');
-
-        $annual = $this->get('/en/factsheet?cat=annual');
+        // Tanpa ?cat= halaman membuka tab tahunan — tab pertama sekaligus bawaan.
+        $annual = $this->get('/en/factsheet');
         $annual->assertOk()
+            ->assertSee('?cat=annual')
+            ->assertSee('?cat=monthly')
             ->assertSee('ANNUAL-DESCRIPTION')
-            ->assertSee('href="https://example.com/annual.pdf"', false)
+            ->assertSee('href="https://example.com/annual-en.pdf"', false)
             ->assertDontSee('ANNUAL-TITLE');
         $this->assertStringNotContainsString('MONTHLY-DESCRIPTION', $annual->getContent());
 
-        $this->get('/en/factsheet?cat=hack')->assertSee('MONTHLY-DESCRIPTION');
+        $monthly = $this->get('/en/factsheet?cat=monthly');
+        $monthly->assertOk()
+            ->assertSee('MONTHLY-DESCRIPTION')
+            ->assertSee('SECOND-MONTHLY-DESCRIPTION')
+            ->assertSee('href="https://example.com/monthly-en.pdf"', false)
+            ->assertDontSee('MONTHLY-TITLE');
+
+        $this->get('/en/factsheet?cat=hack')->assertSee('ANNUAL-DESCRIPTION');
+
+        // Unduhan ikut bahasa: edisi Indonesia menunjuk berkasnya sendiri.
+        $this->get('/id/factsheet?cat=annual')->assertOk()
+            ->assertSee('href="https://example.com/annual-id.pdf"', false)
+            ->assertDontSee('https://example.com/annual-en.pdf', false);
     }
 
     /** @test */

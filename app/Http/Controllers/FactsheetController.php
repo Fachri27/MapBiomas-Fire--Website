@@ -29,15 +29,15 @@ class FactsheetController extends Controller
 
     public function getSelect(){
         if (App::getLocale() == 'id') {
-            return 'id, link, file, titleID as title, descriptionID as description';
+            return 'id, linkID as link, fileID as file, titleID as title, descriptionID as description';
         }else{
-            return 'id, link, file, titleEN as title, descriptionEN as description';
+            return 'id, linkEN as link, fileEN as file, titleEN as title, descriptionEN as description';
         }
     }
 
     public function listFactsheet(Request $request){
         $cat = $request->query('cat');
-        $category = in_array($cat, ['monthly', 'annual']) ? $cat : 'monthly';
+        $category = in_array($cat, ['annual', 'monthly']) ? $cat : 'annual';
 
         $title = 'MapBiomas Fire - Factsheet';
         $description = "Inisiatif MapBiomas Fire dimulai sejak 2023, bersama sembilan jaringan organisasi masyarakat sipil (CSO) yang dikoordinasi oleh Auriga Nusantara dan Woods and Wayside International (WWI). MapBiomas Fire memetakan kebakaran menggunakan teknologi komputasi yang didukung algoritma machine learning dan deep learning.";
