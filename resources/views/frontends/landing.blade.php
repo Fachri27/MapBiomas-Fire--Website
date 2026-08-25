@@ -317,21 +317,7 @@
                     </div>
                 @endif
 
-                @if ($infographic)
-                    <div class="{{ $anim }} mt-8" {!! $reveal(120) !!}>
-                        {{-- Setebal judul kartu kabar. --}}
-                        <p class="font-display text-[clamp(1rem,1.15vw,1.3rem)] font-bold text-neutral-900">
-                            {{ $teks($infographic->title, __('Tanpa judul')) }}
-                        </p>
-                        <div class="mt-3 max-w-[70ch] font-display text-[clamp(0.75rem,0.85vw,0.95rem)] font-light leading-relaxed text-neutral-500">
-                            {{ $teks($infographic->description, __('Belum ada ringkasan.')) }}
-                        </div>
-                    </div>
-                @else
-                    <p class="{{ $anim }} py-16 text-center font-display text-neutral-400" {!! $reveal() !!}>
-                        {{ __('Belum ada infografis terbit.') }}
-                    </p>
-                @endif
+
             </div>
         </section>
 
