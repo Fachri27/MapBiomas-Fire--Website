@@ -159,6 +159,43 @@ class LandingPageTest extends TestCase
             ->assertDontSee('#metodologi', false);
     }
 
+    /**
+     * Tautan factsheet di hero diambil dari tabel factsheet per lokal, bukan
+     * ditulis di Blade — kalau kembali dikeraskan, versi Inggris akan diam-diam
+     * memakai berkas berbahasa Indonesia.
+     */
+    public function test_tautan_factsheet_di_hero_berbeda_tiap_lokal(): void
+    {
+        DB::table('factsheet')->insert([
+            'category' => 'monthly',
+            'titleID' => 'Bulanan', 'titleEN' => 'Monthly',
+            'descriptionID' => 'x', 'descriptionEN' => 'x',
+            'linkID' => 'https://contoh.test/bulanan-id.pdf',
+            'linkEN' => 'https://contoh.test/monthly-en.pdf',
+        ]);
+
+        $this->get('/id')
+            ->assertSee('https://contoh.test/bulanan-id.pdf', false)
+            ->assertDontSee('https://contoh.test/monthly-en.pdf', false);
+
+        $this->get('/en')
+            ->assertSee('https://contoh.test/monthly-en.pdf', false)
+            ->assertDontSee('https://contoh.test/bulanan-id.pdf', false);
+    }
+
+    /** Belum diisi ('#' atau kosong) diarahkan ke halaman factsheet, bukan tautan mati. */
+    public function test_tautan_factsheet_belum_diisi_jatuh_ke_halaman_factsheet(): void
+    {
+        DB::table('factsheet')->insert([
+            'category' => 'monthly',
+            'titleID' => 'Bulanan', 'titleEN' => 'Monthly',
+            'descriptionID' => 'x', 'descriptionEN' => 'x',
+            'linkID' => '#', 'linkEN' => '#',
+        ]);
+
+        $this->get('/id')->assertSee('/id/factsheet', false);
+    }
+
     // ── Kabar ─────────────────────────────────────────────────────────────
 
     public function test_kabar_hanya_menampilkan_yang_sudah_terbit(): void

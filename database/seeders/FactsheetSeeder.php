@@ -24,6 +24,7 @@ class FactsheetSeeder extends Seeder
                 'category' => 'monthly',
                 'titleID' => 'Factsheet Pemantauan Bulanan',
                 'titleEN' => 'Monthly Monitoring Factsheet',
+                'linkEN' => 'https://auriga.or.id/resource/reference/factsheet-mapbiomas-fire-monthly-jan-jun-2026-en.pdf',
             ],
             [
                 'category' => 'annual',
@@ -35,15 +36,16 @@ class FactsheetSeeder extends Seeder
         foreach ($sheets as $sheet) {
             DB::table('factsheet')->updateOrInsert(
                 ['category' => $sheet['category']],
-                array_merge($sheet, [
+                // Defaults diisi dulu; nilai dari $sheet (termasuk linkEN khusus)
+                // mengoverride jika ada.
+                array_merge([
                     'descriptionID' => 'Untuk mengunduh factsheet MapBiomas Indonesia koleksi 1, gunakan tautan berikut',
                     'descriptionEN' => 'To download the MapBiomas Indonesia factsheet collection 1, you can use the following',
-                    // Placeholder; ganti lewat CMS begitu berkasnya tersedia.
                     'linkID' => '#',
                     'linkEN' => '#',
                     'created_at' => $now,
                     'updated_at' => $now,
-                ])
+                ], $sheet)
             );
         }
     }

@@ -19,7 +19,23 @@ class IndexController extends Controller
             'description' => $description,
             'news' => $this->getNews(),
             'infographic' => $this->getInfographic(),
+            'factsheetLink' => $this->getFactsheetLink(),
         ]);
+    }
+
+    /**
+     * Tautan factsheet bulanan untuk tombol di hero, mengikuti lokal aktif.
+     * Sumbernya tabel factsheet supaya dapat diganti lewat CMS — sebelumnya
+     * URL-nya ditulis langsung di Blade sehingga versi Inggris tidak mungkin
+     * berbeda. Placeholder '#' diperlakukan sebagai belum diisi.
+     */
+    public function getFactsheetLink(): ?string
+    {
+        $kolom = app()->getLocale() === 'id' ? 'linkID' : 'linkEN';
+
+        $link = DB::table('factsheet')->where('category', 'monthly')->value($kolom);
+
+        return filled($link) && $link !== '#' ? $link : null;
     }
 
     public function selectNews()
