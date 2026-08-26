@@ -144,7 +144,7 @@
                                  tidak bergantung panjang labelnya, sehingga tombol kartu kiri
                                  dan kanan tetap segaris walau labelnya berbeda. --}}
                             <div class="mt-auto grid grid-cols-2 gap-2 pt-8 lg:gap-[2.6cqw] lg:pt-0">
-                                <a href="https://auriga.or.id/resource/reference/factsheet-mapbiomas-fire-monthly.pdf"
+                                <a href="{{ $factsheetLink ?? route('factsheet', $lang) }}"
                                    class="border border-ember px-3 py-2.5 text-center lg:px-[3.5cqw] lg:py-[2.05cqw] font-display text-[clamp(0.85rem,3.16cqw,1.55rem)] font-light leading-[1.2] text-neutral-900 transition-colors hover:bg-ember hover:text-white">
                                        {{ __('Factsheet') }}
                                 </a>
