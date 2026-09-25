@@ -1,0 +1,33 @@
+# Disable script execution and directory browsing
+Options -ExecCGI -Indexes
+
+# Remove PHP handlers to prevent script execution
+<IfModule mod_mime.c>
+    RemoveHandler .php .phar .phtml .php3 .php4 .php5 .php7 .php8 .cgi .pl .py .sh
+    RemoveType .php .phar .phtml .php3 .php4 .php5 .php7 .php8 .cgi .pl .py .sh
+</IfModule>
+RemoveHandler .php .phar .phtml
+
+# Disable PHP engine across different mod_php versions
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Deny execution and access to PHP, PHAR, PHTML, CGI, PL, PY, SH, and other executable scripts
+<FilesMatch "(?i)\.(php[0-9]?|phar|phtml|cgi|pl|py|sh|bash|exe|bat|cmd)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

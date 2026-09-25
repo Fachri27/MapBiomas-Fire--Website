@@ -3,12 +3,16 @@
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
 class EditFaqComponent extends Component
 {
-    public $questionID, $questionEN, $answerID, $answerEN, $idFaq;
+    public $questionID, $questionEN, $answerID, $answerEN;
+
+    #[Locked]
+    public $idFaq;
 
     public function mount($id){
         $data = DB::table('faq')->where('id', $id)->first();

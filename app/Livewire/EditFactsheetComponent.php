@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use Masmerise\Toaster\Toaster;
@@ -12,9 +13,19 @@ class EditFactsheetComponent extends Component
 {
     use WithFileUploads;
 
-    public $category, $titleEN, $titleID, $descriptionEN, $descriptionID, $idFactsheet;
+    public $category, $titleEN, $titleID, $descriptionEN, $descriptionID;
+
+    #[Locked]
+    public $idFactsheet;
+
     // Unduhan ikut bahasa: tiap edisi punya PDF/tautannya sendiri.
-    public $linkID, $linkEN, $pdfID, $pdfEN, $updfID, $updfEN;
+    public $linkID, $linkEN, $pdfID, $pdfEN;
+
+    #[Locked]
+    public $updfID;
+
+    #[Locked]
+    public $updfEN;
 
     public function mount($id){
         $data = DB::table('factsheet')->where('id', $id)->first();
@@ -81,6 +92,7 @@ class EditFactsheetComponent extends Component
         $new = $pdf->hashName();
 
         if ($lama && $lama !== $new && $lama !== $lain) {
+            $lama = basename($lama);
             Storage::delete('public/files/factsheet/'.$lama);
         }
 
@@ -88,15 +100,33 @@ class EditFactsheetComponent extends Component
     }
 
     public function pdfValid($file){
+        if (! $file) {
+            return false;
+        }
+
         if (strtolower($file->getClientOriginalExtension()) !== 'pdf') {
             Toaster::error('File must be a PDF!');
             return false;
         }
+
+        if ($file->getMimeType() !== 'application/pdf') {
+            Toaster::error('File must be a PDF!');
+            return false;
+        }
+
+        $path = $file->getRealPath() ?: $file->getPathname();
+        $header = $path && is_readable($path) ? @file_get_contents($path, false, null, 0, 5) : false;
+        if ($header === false || ! str_starts_with($header, '%PDF-')) {
+            Toaster::error('File must be a PDF!');
+            return false;
+        }
+
         // Batas 50MB disetel juga di config/livewire.php; tolak lebih awal dengan pesan jelas.
         if ($file->getSize() > 50 * 1024 * 1024) {
             Toaster::error('PDF is too large (max 50MB)!');
             return false;
         }
+
         return true;
     }
 

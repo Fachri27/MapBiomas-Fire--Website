@@ -65,7 +65,7 @@ return [
 
     'temporary_file_upload' => [
         'disk' => null,        // Example: 'local', 's3'              | Default: 'default'
-        'rules' => ['required', 'file', 'max:51200'], // 50MB; factsheet PDF bisa besar. Default Livewire 12MB.
+        'rules' => ['required', 'file', 'mimes:jpeg,png,jpg,gif,webp,pdf,mp4,avi,mov,3gp,m4a', 'max:51200'], // 50MB; factsheet PDF bisa besar. Default Livewire 12MB.
         'directory' => null,   // Example: 'tmp'                      | Default: 'livewire-tmp'
         'middleware' => null,  // Example: 'throttle:5,1'             | Default: 'throttle:60,1'
         'preview_mimes' => [   // Supported file types for temporary pre-signed file URLs...

@@ -33,6 +33,13 @@ class CmsSmokeTest extends TestCase
         ], $ubah));
     }
 
+    private function fakePdf(string $name = 'test.pdf', int $kb = 200): UploadedFile
+    {
+        $file = UploadedFile::fake()->create($name, $kb, 'application/pdf');
+        file_put_contents($file->getRealPath(), "%PDF-1.4\n");
+        return $file;
+    }
+
     /** @test */
     public function cms_pages_require_session(): void
     {
@@ -108,8 +115,8 @@ class CmsSmokeTest extends TestCase
             ->set('descriptionID', 'desc-id')
             ->set('descriptionEN', 'desc-en')
             // Link sengaja kosong: PDF saja sudah cukup.
-            ->set('pdfID', UploadedFile::fake()->create('factsheet-id.pdf', 200, 'application/pdf'))
-            ->set('pdfEN', UploadedFile::fake()->create('factsheet-en.pdf', 200, 'application/pdf'))
+            ->set('pdfID', $this->fakePdf('factsheet-id.pdf', 200))
+            ->set('pdfEN', $this->fakePdf('factsheet-en.pdf', 200))
             ->call('storeAksi')
             ->assertRedirect('/cms/listfactsheet');
 
@@ -141,12 +148,12 @@ class CmsSmokeTest extends TestCase
         Storage::fake('local');
 
         Livewire::test(AddFactsheetComponent::class)
-            ->set('pdfEN', UploadedFile::fake()->create('gede.pdf', 51201, 'application/pdf'))
+            ->set('pdfEN', $this->fakePdf('gede.pdf', 51201))
             ->assertSet('pdfEN', null);
 
         // Tepat di batas masih diterima.
         Livewire::test(AddFactsheetComponent::class)
-            ->set('pdfEN', UploadedFile::fake()->create('pas.pdf', 51200, 'application/pdf'))
+            ->set('pdfEN', $this->fakePdf('pas.pdf', 51200))
             ->assertNotSet('pdfEN', null);
     }
 
@@ -192,7 +199,7 @@ class CmsSmokeTest extends TestCase
         $id = $this->terbitkanFactsheet(['fileID' => 'warisan.pdf', 'fileEN' => 'warisan.pdf']);
 
         Livewire::test(EditFactsheetComponent::class, ['id' => $id])
-            ->set('pdfID', UploadedFile::fake()->create('baru.pdf', 10, 'application/pdf'))
+            ->set('pdfID', $this->fakePdf('baru.pdf', 10))
             ->call('storeAksi');
 
         $row = DB::table('factsheet')->find($id);
@@ -240,12 +247,19 @@ class CmsSmokeTest extends TestCase
                 ->assertSee('isi draf', false);
 
             // Pratinjau kartu menampilkan thumbnail + judul + deskripsi dua bahasa.
+            $photoPath = public_path('storage/files/photos/draf.jpg');
+            @mkdir(dirname($photoPath), 0775, true);
+            file_put_contents($photoPath, 'fake-content');
+
             $this->withSession(['id' => 1])->get("/cms/previewcardnews/$id")
                 ->assertOk()
                 ->assertSee('storage/files/photos/draf.jpg', false)
                 ->assertSee('JUDUL-DRAFT')
                 ->assertSee('DRAFT-TITLE');
         } finally {
+            if (isset($photoPath) && file_exists($photoPath)) {
+                @unlink($photoPath);
+            }
             DB::table('news')->where('id', $id)->delete();
         }
     }

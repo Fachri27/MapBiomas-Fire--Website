@@ -69,6 +69,7 @@ Route::middleware([hasSession::class])->group(function () {
 
 //url to logout session
 Route::get('/cms/logout', function () {
-    session()->flush();
+    session()->invalidate();
+    session()->regenerateToken();
     return redirect('/cms/login');
 });

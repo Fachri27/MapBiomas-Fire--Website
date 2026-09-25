@@ -5,8 +5,10 @@ namespace App\Livewire;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use Masmerise\Toaster\Toaster;
@@ -14,7 +16,14 @@ use Masmerise\Toaster\Toaster;
 class EditNewsComponent extends Component
 {
     use WithFileUploads;
-    public $idNews, $publishdate, $titleID, $titleEN, $descriptionID, $descriptionEN, $contentID, $contentEN, $photo, $uphoto, $isactive, $category;
+
+    #[Locked]
+    public $idNews;
+
+    #[Locked]
+    public $uphoto;
+
+    public $publishdate, $titleID, $titleEN, $descriptionID, $descriptionEN, $contentID, $contentEN, $photo, $isactive, $category;
 
     public function mount($id){
         $data = DB::table('news')->where('id', $id)->first();
@@ -34,6 +43,10 @@ class EditNewsComponent extends Component
     }
 
     public function uploadImage(){
+        $this->validate([
+            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+        ]);
+
         $file = $this->photo->store('public/files/photos');
         $foto = $this->photo->hashName();
 
@@ -57,11 +70,15 @@ class EditNewsComponent extends Component
             if(!$this->photo){
                 $name = $this->uphoto;
             }else{
-                    Storage::delete('public/files/photos/'.$this->uphoto);
-                    Storage::delete('public/files/photos/thumbnail/'.$this->uphoto);
-                    $name=  $this->uploadImage();
-
-
+                $this->validate([
+                    'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+                ]);
+                $cleanPhoto = $this->uphoto ? basename($this->uphoto) : null;
+                if ($cleanPhoto && ! in_array($cleanPhoto, ['.', '..'])) {
+                    Storage::delete('public/files/photos/'.$cleanPhoto);
+                    Storage::delete('public/files/photos/thumbnail/'.$cleanPhoto);
+                }
+                $name=  $this->uploadImage();
             }
             DB::table('news')
                     ->where('id', $this->idNews)
@@ -78,6 +95,9 @@ class EditNewsComponent extends Component
                         'status' => $this->isactive,
                         'updated_at' => Carbon::now('Asia/Jakarta')
                     ]);
+
+            $this->uphoto = $name;
+            $this->reset('photo');
 
             Toaster::success('Succesfully update news');
         }
@@ -101,7 +121,22 @@ class EditNewsComponent extends Component
         }elseif($this->titleEN == '' ){
             Toaster::error('Title English is required!');
             return;
-        }elseif($this->descriptionID == '' ){
+        }
+
+        if ($this->photo) {
+            $validator = Validator::make(
+                ['photo' => $this->photo],
+                ['photo' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:5120']]
+            );
+
+            if ($validator->fails()) {
+                $this->addError('photo', $validator->errors()->first('photo'));
+                Toaster::error($validator->errors()->first('photo'));
+                return;
+            }
+        }
+
+        if($this->descriptionID == '' ){
             Toaster::error('Description Indonesia is required!');
             return;
         }elseif(strlen($this->descriptionID) > 255 ){

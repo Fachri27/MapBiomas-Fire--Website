@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Livewire\Component;
@@ -17,6 +18,10 @@ class AddNewsComponent extends Component
     public $publishdate, $titleID, $titleEN, $descriptionID, $descriptionEN, $contentID, $contentEN, $category, $subcategory, $photo, $isactive=0;
 
     public function uploadImage(){
+        $this->validate([
+            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+        ]);
+
         $file = $this->photo->store('public/files/photos');
         $foto = $this->photo->hashName();
 
@@ -36,6 +41,10 @@ class AddNewsComponent extends Component
 
     public function storePosts(){
         if($this->manualValidation()){
+            $this->validate([
+                'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            ]);
+
             DB::table('news')->insert([
                 'publishdate' => $this->publishdate,
                 'titleID' => $this->titleID,
@@ -72,10 +81,23 @@ class AddNewsComponent extends Component
         }elseif($this->titleEN == '' ){
             Toaster::error('Title English is required!');
             return;
-        }elseif($this->photo == '' ){
+        }elseif($this->photo == '' || !$this->photo ){
             Toaster::error('Image is required!');
             return;
-        }elseif($this->descriptionID == '' ){
+        }
+
+        $validator = Validator::make(
+            ['photo' => $this->photo],
+            ['photo' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120']]
+        );
+
+        if ($validator->fails()) {
+            $this->addError('photo', $validator->errors()->first('photo'));
+            Toaster::error($validator->errors()->first('photo'));
+            return;
+        }
+
+        if($this->descriptionID == '' ){
             Toaster::error('Description Indonesia is required!');
             return;
         }elseif(strlen($this->descriptionID) > 255 ){

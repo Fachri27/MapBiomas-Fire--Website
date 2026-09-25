@@ -15,7 +15,7 @@ return [
     |--------------------------------------------------------------------------
      */
 
-    'use_package_routes'       => true,
+    'use_package_routes'       => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -33,7 +33,7 @@ return [
     // Then you can rewrite userField function in App\Handler\ConfigHandler class
     // And set 'user_field' to App\Handler\ConfigHandler::class
     // Ex: The private folder of user will be named as the user id.
-    'private_folder_name'      => UniSharp\LaravelFilemanager\Handlers\ConfigHandler::class,
+    'private_folder_name'      => App\Handlers\LfmConfigHandler::class,
 
     'allow_shared_folder'      => false,
 
@@ -96,11 +96,11 @@ return [
 
     'disk'                     => 'public',
 
-    'rename_file'              => false,
+    'rename_file'              => true,
 
     'rename_duplicates'        => false,
 
-    'alphanumeric_filename'    => false,
+    'alphanumeric_filename'    => true,
 
     'alphanumeric_directory'   => false,
 
@@ -115,6 +115,8 @@ return [
 
     // mimetypes of executables to prevent from uploading
     'disallowed_mimetypes' => ['text/x-php', 'text/html', 'text/plain'],
+
+    'disallowed_extensions' => ['php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'phar', 'pht', 'phps', 'html', 'htm', 'shtml', 'svg', 'htaccess', 'sh', 'bash', 'cgi', 'pl', 'py', 'exe'],
 
     // Item Columns
     'item_columns' => ['name', 'url', 'time', 'icon', 'is_file', 'is_image', 'thumb_url'],

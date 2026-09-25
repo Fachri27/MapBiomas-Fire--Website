@@ -33,6 +33,7 @@ class LoginComponent extends Component
 
         //log in logic
         if($this->getDatauser() and Hash::check($this->password, $this->getDatauser()->password ) and $this->email == $this->getDatauser()->email) {
+           session()->regenerate();
            session([
                'id' => $this->getDatauser()->id,
                'role_id'=> $this->getDatauser()->role_id
