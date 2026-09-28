@@ -27,13 +27,31 @@ class IndexController extends Controller
      * Tautan factsheet bulanan untuk tombol di hero, mengikuti lokal aktif.
      * Sumbernya tabel factsheet supaya dapat diganti lewat CMS — sebelumnya
      * URL-nya ditulis langsung di Blade sehingga versi Inggris tidak mungkin
-     * berbeda. Placeholder '#' diperlakukan sebagai belum diisi.
+     * berbeda. Mengambil entri monthly yang paling baru diunggah; PDF unggahan
+     * (kolom file) menang atas tautan. Placeholder '#' dianggap belum diisi.
      */
     public function getFactsheetLink(): ?string
     {
-        $kolom = app()->getLocale() === 'id' ? 'linkID' : 'linkEN';
+        $suffix = app()->getLocale() === 'id' ? 'ID' : 'EN';
+        $linkKolom = 'link'.$suffix;
+        $fileKolom = 'file'.$suffix;
 
-        $link = DB::table('factsheet')->where('category', 'monthly')->value($kolom);
+        $row = DB::table('factsheet')
+            ->where('category', 'monthly')
+            ->orderByDesc('created_at')
+            ->orderByDesc('updated_at')
+            ->first();
+
+        if (! $row) {
+            return null;
+        }
+
+        $file = $row->$fileKolom;
+        if (filled($file)) {
+            return asset('storage/files/factsheet/'.$file);
+        }
+
+        $link = $row->$linkKolom;
 
         return filled($link) && $link !== '#' ? $link : null;
     }
