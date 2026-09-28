@@ -73,12 +73,28 @@ class FactsheetController extends Controller
 
         $link = $row->$linkCol ?? '';
         if (is_string($link) && str_starts_with($link, 'http')) {
-            $resp = Http::timeout(60)->get($link);
+            // Range diteruskan ke server sumber supaya pdf.js bisa mengambil
+            // potongan awal file saja (xref + halaman 1), bukan puluhan MB
+            // penuh, sebelum menampilkan sampul.
+            $range = $request->header('Range');
+            $resp = Http::timeout(60)
+                ->withHeaders($range ? ['Range' => $range] : [])
+                ->get($link);
             abort_if(! $resp->successful(), 404);
-            return response($resp->body(), 200, [
+
+            $headers = array_filter([
                 'Content-Type' => $resp->header('Content-Type', 'application/pdf'),
+                'Accept-Ranges' => $resp->header('Accept-Ranges', 'bytes'),
+                'Content-Range' => $resp->header('Content-Range'),
+                'Content-Length' => $resp->header('Content-Length'),
+                // pdf.js meminta ETag/Last-Modified untuk memastikan berkas
+                // tidak berubah di antara permintaan range yang terpisah.
+                'ETag' => $resp->header('ETag'),
+                'Last-Modified' => $resp->header('Last-Modified'),
                 'Cache-Control' => 'public, max-age=86400',
             ]);
+
+            return response($resp->body(), $resp->status(), $headers);
         }
 
         abort(404);
