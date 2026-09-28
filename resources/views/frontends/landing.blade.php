@@ -16,8 +16,8 @@
     $highlights = [
         ['value' => $angka(9.5, 1), 'unit' => __('juta ha'), 'label' => __('2000-2024 burned areas')],
         ['value' => $angka(40), 'unit' => '%', 'label' => __('2000-2024 burned areas are on peat land')],
-        ['value' => $angka(178232), 'unit' => __('ha'), 'label' => __('January-June 2026 burned areas')],
-        ['value' => $angka(21), 'unit' => '%', 'label' => __('January-June 2026 burned areas are in Kalimantan')],
+        ['value' => $angka(321513), 'unit' => __('ha'), 'label' => __('January-July 2026 burned areas')],
+        ['value' => $angka(26), 'unit' => '%', 'label' => __('January-July 2026 burned areas are in Bali & Nusa Tenggara')],
     ];
 
     /** Tanggal publikasi kabar mengikuti bahasa aktif (id/en). */
@@ -203,11 +203,14 @@
         <section class="bg-white py-[6%] sm:py-[3.3%]" aria-label="Angka kunci Koleksi 1">
             {{-- 2x2 di seluler: empat angka terbaca sebagai satu blok, bukan
                  empat balok setinggi layar. --}}
-            <div class="{{ $shell }} grid grid-cols-2 gap-2 sm:gap-x-[2.7%] sm:gap-y-6 xl:grid-cols-4 text-center">
+            <div class="{{ $shell }} grid grid-cols-2 items-stretch gap-2 sm:gap-x-[2.7%] sm:gap-y-6 xl:grid-cols-4 text-center">
                 @foreach ($highlights as $i => $tile)
-{{-- justify-start, bukan center: dengan center, ubin yang labelnya lebih
-                              pendek ikut turun sehingga angka antar ubin tidak sebaris. --}}
-                    <div class="{{ $anim }} flex flex-col justify-start bg-ember-soft px-4 pb-5 pt-7 sm:aspect-[349/197] sm:px-[8%] sm:pb-[7%] sm:pt-[11%]"
+{{-- justify-center: isi kartu (angka + label) selalu di tengah
+                              vertikal sehingga jarak atas-bawah rata. Angka tetap
+                              sebaris antar ubin karena tinggi label dikunci
+                              min-h 3 baris di bawah. items-stretch + h-full:
+                              semua ubin rata mengikuti barisnya. --}}
+                    <div class="{{ $anim }} flex h-full flex-col justify-center bg-ember-soft px-4 pb-5 pt-5 sm:min-h-[130px] sm:px-[8%] sm:pb-[6%] sm:pt-[6%]"
                          {!! $reveal($i * 90) !!}>
                         {{-- Skala disetel agar nilai terpanjang (232.996) tetap muat; ukurannya
                              dibuat seragam supaya keempat ubin terbaca sebagai satu set.
@@ -219,7 +222,10 @@
                                  dipisah spasi supaya tidak menyatu jadi satu kata. --}}
                             @if ($tile['unit'] === '%'){{ $tile['value'] }}{{ $tile['unit'] }}@else{{ $tile['value'] }} {{ $tile['unit'] }}@endif
                         </p>
-                        <p class="mt-3 font-display text-[clamp(0.75rem,0.85vw,0.95rem)] font-normal leading-snug text-white/95">
+                        {{-- min-h 3 baris (leading-tight = 1.25): kartu label 1-2 baris
+                             mendapat ruang kosong yang sama, jadi angka sebaris di
+                             atas dan tepi bawah semua kartu rata. --}}
+                        <p class="mt-2 min-h-[3.75em] text-balance font-display text-[clamp(0.75rem,0.85vw,0.95rem)] font-normal leading-tight text-white/95">
                             {{ $tile['label'] }}
                         </p>
                     </div>
