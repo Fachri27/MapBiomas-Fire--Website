@@ -33,6 +33,9 @@ Route::middleware([setLanguage::class])->group(function () {
 });
 
 
+// Proxy satu-origin untuk sampul PDF factsheet (lihat FactsheetController::file).
+Route::get('/factsheet-file/{id}', [FactsheetController::class, 'file'])->name('factsheet.file');
+
 //redirect to login page if user has no session
 Route::middleware([checkSession::class])->group(function () {
     Route::get('/cms/dashboard', [DashboardController::class, 'index'])->name('cms.dashboard');

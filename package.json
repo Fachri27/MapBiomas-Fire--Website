@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@alpinejs/intersect": "^3.16.2",
-        "alpinejs": "^3.16.2"
+        "alpinejs": "^3.16.2",
+        "pdfjs-dist": "^6.3.289"
     }
 }
