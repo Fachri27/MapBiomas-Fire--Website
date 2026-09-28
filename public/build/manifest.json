@@ -1,18 +1,34 @@
 {
+  "node_modules/pdfjs-dist/build/pdf.worker.min.mjs": {
+    "file": "assets/pdf.worker.min-Dswkl-cV.mjs",
+    "src": "node_modules/pdfjs-dist/build/pdf.worker.min.mjs"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-BRXV3Zu1.css",
+    "file": "assets/app-2PJwca7N.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/cms/tinymce.css": {
-    "file": "assets/tinymce-CXxF_4x2.css",
+    "file": "assets/tinymce-CzrfzQDB.css",
     "src": "resources/css/cms/tinymce.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-DEyGRiHv.js",
+    "file": "assets/app-DJqw-rUo.js",
     "name": "app",
     "src": "resources/js/app.js",
-    "isEntry": true
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/pdf-thumb.js"
+    ]
+  },
+  "resources/js/pdf-thumb.js": {
+    "file": "assets/pdf-thumb-Dxy3or0O.js",
+    "name": "pdf-thumb",
+    "src": "resources/js/pdf-thumb.js",
+    "isDynamicEntry": true,
+    "assets": [
+      "assets/pdf.worker.min-Dswkl-cV.mjs"
+    ]
   }
 }

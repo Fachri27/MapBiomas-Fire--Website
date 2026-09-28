@@ -7,3 +7,10 @@ import intersect from '@alpinejs/intersect';
 document.addEventListener('alpine:init', () => {
     window.Alpine.plugin(intersect);
 });
+
+// Thumbnail halaman pertama PDF (daftar factsheet): modul + pdf.js hanya
+// diunduh bila halaman memang memuat <canvas data-pdf-thumb>.
+const pdfThumbs = document.querySelectorAll('canvas[data-pdf-thumb]');
+if (pdfThumbs.length) {
+    import('./pdf-thumb').then(({ initPdfThumbs }) => initPdfThumbs(pdfThumbs));
+}
