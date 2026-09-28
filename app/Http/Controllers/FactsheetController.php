@@ -41,10 +41,12 @@ class FactsheetController extends Controller
         $description = "Inisiatif MapBiomas Fire dimulai sejak 2023, bersama sembilan jaringan organisasi masyarakat sipil (CSO) yang dikoordinasi oleh Auriga Nusantara dan Woods and Wayside International (WWI). MapBiomas Fire memetakan kebakaran menggunakan teknologi komputasi yang didukung algoritma machine learning dan deep learning.";
         // Satu daftar gabungan annual + monthly; kategorinya ditampilkan
         // sebagai badge per item, bukan tab terpisah.
+        // Urut terbaru dulu; id jadi tiebreaker untuk baris yang dibuat
+        // pada detik yang sama.
         $sheets = DB::table('factsheet')
                 ->selectRaw($this->getSelect().', category')
-                ->orderBy('category')
                 ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->get();
         return view('frontends.factsheet', compact('title', 'description', 'sheets'));
     }

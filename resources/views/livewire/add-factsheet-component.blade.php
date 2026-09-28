@@ -120,9 +120,5 @@
             </x-slot:idn>
         </x-cms.form-tabs>
 
-        <div class="mt-8 flex items-center justify-end gap-2 border-t border-line pt-5">
-            <x-cms.button variant="secondary" href="{{ route('cms.factsheet.index') }}">Cancel</x-cms.button>
-            <x-cms.button wire:click="storeAksi" loadingTarget="storeAksi">Save</x-cms.button>
-        </div>
     </div>
 </div>
