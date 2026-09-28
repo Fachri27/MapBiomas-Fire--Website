@@ -1,7 +1,12 @@
 import * as pdfjsLib from 'pdfjs-dist';
-import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+// ?worker&inline: Vite meng-inline-kan worker menjadi blob URL di dalam
+// bundle, tidak ada permintaan .mjs terpisah ke server. Nginx lama
+// menyajikan .mjs sebagai octet-stream dan peramban menolaknya, jadi
+// jalan ini tidak tergantung MIME type server sama sekali.
+import PdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?worker&inline';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+// Satu worker dibagi semua render (workerPort tidak dihentikan pdf.destroy).
+pdfjsLib.GlobalWorkerOptions.workerPort = new PdfWorker();
 
 /* Merender halaman pertama PDF ke <canvas> sebagai thumbnail daftar
    factsheet. Hanya dipakai untuk berkas yang diunggah lewat CMS
