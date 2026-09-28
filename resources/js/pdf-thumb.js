@@ -14,10 +14,12 @@ pdfjsLib.GlobalWorkerOptions.workerPort = new PdfWorker();
 async function renderThumb(canvas) {
     const url = canvas.dataset.pdfThumb;
     try {
-        const pdf = await pdfjsLib.getDocument({
+        // destroy() ada di loading task, bukan di dokumen (pdf.js v6).
+        const task = pdfjsLib.getDocument({
             url,
             withCredentials: false,
-        }).promise;
+        });
+        const pdf = await task.promise;
         const page = await pdf.getPage(1);
         const scale = 360 / page.getViewport({ scale: 1 }).width;
         const viewport = page.getViewport({ scale });
@@ -29,7 +31,7 @@ async function renderThumb(canvas) {
             canvasContext: canvas.getContext('2d'),
             viewport,
         }).promise;
-        await pdf.destroy();
+        await task.destroy();
     } catch (err) {
         // Gagal dimuat (CORS, berkas hilang/korup): placeholder generik.
         console.warn('[pdf-thumb] gagal merender', url, err);
