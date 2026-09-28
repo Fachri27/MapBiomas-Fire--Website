@@ -45,6 +45,7 @@ class FactsheetController extends Controller
                 ->selectRaw($this->getSelect().', category')
                 ->orderBy('category')
                 ->orderByDesc('created_at')
+                ->orderByDesc('id')
                 ->get();
         return view('frontends.factsheet', compact('title', 'description', 'sheets'));
     }
