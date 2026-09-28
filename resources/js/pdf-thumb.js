@@ -7,9 +7,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
    factsheet. Hanya dipakai untuk berkas yang diunggah lewat CMS
    (satu origin); tautan luar tidak dirender karena CORS. */
 async function renderThumb(canvas) {
+    const url = canvas.dataset.pdfThumb;
     try {
         const pdf = await pdfjsLib.getDocument({
-            url: canvas.dataset.pdfThumb,
+            url,
             withCredentials: false,
         }).promise;
         const page = await pdf.getPage(1);
